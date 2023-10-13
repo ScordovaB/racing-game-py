@@ -12,6 +12,30 @@ class Entity(ABC, Entity):
     def add(self):
         pass
 
+class EntityCube(ABC,Entity):
+    '''Interfaz de Entidad Cubo que extiende de la interface Entity '''
+    def add(self,texture, scale, position):
+        ''' Metodo que inserta entidad, texture es un string, scale y position son tuplas'''
+        return Entity(
+            model='cube',
+            texture = texture,
+            scale=scale,
+            position=position,
+            collider='box'
+        )
+
+class EntityPlane(ABC,Entity):
+    '''Interfaz de Entidad Plane que extiende de la interface Entity '''
+    def add(self,texture, scale, position):
+        ''' Metodo que inserta entidad, texture es un string, scale y position son tuplas'''
+        return Entity(
+            model='plane',
+            texture = texture,
+            scale=scale,
+            position=position,
+            collider='mesh'
+        )
+
 #Factory Method(Clase Abstracta)
 class TrackElement:
     '''TrackElement clase abstracta'''
@@ -28,19 +52,13 @@ class TrackElement:
 
 
 #Productos concretos
-class EntityFence(Entity):
+class EntityFence(EntityCube):
     '''Clase crea Entidad Fence que extiende de la interface Entity '''
 
     def add(self, position, scale)-> None:
         '''Metodo que inserta un elemento del juego, scale y position son tuplas'''
         #print("Se ejecuto add de FinishLine")
-        return Entity(
-            model='cube',
-            texture = 'concrete.jpg',
-            scale=scale,
-            position=position,
-            collider='box'
-        )
+        return EntityCube.add(self,'assets/concrete.jpg',scale=scale,position=position)
 
 class EntityWall(Entity):
     '''Clase crea Entidad Fence que extiende de la interface Entity '''
