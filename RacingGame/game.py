@@ -1,8 +1,11 @@
+from __future__ import annotations
 from ursina import *
 from ursina.prefabs.first_person_controller import FirstPersonController
 import time
 
+
 # Instanciamos la clase Ursina
+
 app = Ursina()
 
 # Player
@@ -15,6 +18,8 @@ player = FirstPersonController(
 player.position = (0, 10, -20)
 # Cursor invisible
 player.cursor.visible = False
+player.cursor.enabled = False
+camera.fov = 90
 
 # Cielo oscurecido
 sky = Sky()
@@ -35,6 +40,7 @@ ground1 = Entity(
     scale=(10, -2, 50),
 )
 
+# sw = Sprite('assets/f1car1.png',parent=camera.ui, scale=0.3, position=(0,-0.1)) #, scale=1, position=(0,0)
 
 # Pared
 pillar0 = Entity(
@@ -51,6 +57,7 @@ pillar1 = Entity(
     position=(5, .5, 0),
     collider='box'
 )
+
 pillar2 = Entity(
     model='cube',
     texture='concrete.jpg',
@@ -84,6 +91,14 @@ acce_audio = Audio('assets/ferrari-488-pista-acceleration.mp3',
 
 
 image = Sprite('assets/f1car.png', scale=(2, 2, .1), parent=camera.ui)
+
+car = Entity(
+    parent=camera.ui,
+    model='cube',
+    position=(0, 0),
+    scale=(1.8, 1, 1),
+    texture='assets/ferrari1.png'
+)
 
 
 def update():
@@ -147,8 +162,6 @@ def input(key):
         elapsed_time = end_time - start_time
         print("Seconds:", round(elapsed_time, 2))
 
-        # Sleep for 1 seconds, and print time before quitting
-        # new_time = Text(text='Time:'+str(round(elapsed_time,2)),position=(-0.8,0.4),scale=2,color=color.black)
         time.sleep(1)
 
         quit()
@@ -156,12 +169,10 @@ def input(key):
 # sw =Sprite('assets/final458/458recto.png',parent=camera.ui, scale=0.2, position=(0,-0.1)) #, scale=1, position=(0,0)
 
 
-# Start game
 start_time = time.time()
-# elapsed_time = 0
-# Print realtime on screen
 time_text = Text(text='Time:', position=(-0.8, 0.4),
                  scale=2, color=color.black)
+
 
 # Audio
 # audio = Audio('assets/TokyoDrift.mp3',loop=True, autoplay=True)
