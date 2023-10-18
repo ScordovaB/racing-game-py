@@ -5,6 +5,61 @@ import time
 from abc import ABC, abstractmethod
 from enum import Enum
 
+class GameUpdates(Entity):
+    def input(self,key):
+        if key == 'escape':
+
+                #end_time = time.time()
+                #elapsed_time = end_time - start_time
+                #print("Seconds:",round(elapsed_time,2))
+
+                time.sleep(1)
+            
+                quit()
+
+class Game():
+    '''Clase que crea el juego con Ursina'''
+    def __init__(self):
+
+        self.app = Ursina()
+        self.player = FirstPersonController(
+            collider='box',
+            jump_height=0,
+            speed=5
+        )
+        #Player position at the start
+        self.player.position = (0,10,-20)
+
+        #Invisible Cursor 
+        self.player.cursor.visible = False
+        self.player.cursor.enabled = False
+
+        #self.camera.fov = 90
+
+        #Darker Sky
+        self.sky = Sky()
+        self.sky.texture = 'sky_sunset'
+        
+        #make globals velocity variables
+        self.velocity = 0
+        self.player_og_speed =5
+
+        self.car  = Entity(
+            parent = camera.ui,
+            model = 'cube',
+            position = (0,0),
+            scale = (1.8,1,1),
+            texture = 'assets/ferrari1pixel.png'
+        )
+
+        #Game realtime updates, with function update and input
+        self.updates = GameUpdates()
+
+
+    def runGame(self):
+        self.app.run()
+        
+
 
 #Factory Interface
 class Entity(ABC, Entity):
@@ -12,29 +67,18 @@ class Entity(ABC, Entity):
     def add(self):
         pass
 
-class EntityCube(ABC,Entity):
+class EntityElement(Entity):
     '''Interfaz de Entidad Cubo que extiende de la interface Entity '''
-    def add(self,texture, scale, position):
-        ''' Metodo que inserta entidad, texture es un string, scale y position son tuplas'''
+    def add(self,model,collider,texture, scale, position):
+        ''' Metodo que inserta entidad, model es un string, collider es un string, texture es un string, scale y position son tuplas'''
         return Entity(
-            model='cube',
+            model=model,
             texture = texture,
             scale=scale,
             position=position,
-            collider='box'
+            collider=collider
         )
 
-class EntityPlane(ABC,Entity):
-    '''Interfaz de Entidad Plane que extiende de la interface Entity '''
-    def add(self,texture, scale, position):
-        ''' Metodo que inserta entidad, texture es un string, scale y position son tuplas'''
-        return Entity(
-            model='plane',
-            texture = texture,
-            scale=scale,
-            position=position,
-            collider='mesh'
-        )
 
 #Factory Method(Clase Abstracta)
 class TrackElement:
@@ -52,54 +96,37 @@ class TrackElement:
 
 
 #Productos concretos
-class EntityFence(EntityCube):
+class EntityFence(EntityElement):
     '''Clase crea Entidad Fence que extiende de la interface Entity '''
 
     def add(self, position, scale)-> None:
         '''Metodo que inserta un elemento del juego, scale y position son tuplas'''
         #print("Se ejecuto add de FinishLine")
-        return EntityCube.add(self,'assets/concrete.jpg',scale=scale,position=position)
+        return EntityElement.add(self, 'cube', 'box','assets/concrete.jpg',scale=scale,position=position)
 
-class EntityWall(Entity):
+class EntityWall(EntityElement):
     '''Clase crea Entidad Fence que extiende de la interface Entity '''
 
     def add(self, position, scale)-> None:
         '''Metodo que inserta un elemento del juego, scale y position son tuplas'''
         #print("Se ejecuto add de FinishLine")
-        return Entity(
-            model='cube',
-            texture = 'concrete.jpg',
-            scale=scale,
-            position=position,
-            collider='box'
-        )
+        return EntityElement.add(self, 'cube', 'box','assets/concrete.jpg',scale=scale,position=position)
 
-class EntityFinishLine(Entity):
+class EntityFinishLine(EntityElement):
     '''Clase crea Entidad Finish Line que extiende de la interface Entity '''
     def add(self, position, scale)-> None:
         '''Metodo que inserta un elemento del juego, scale y position son tuplas'''
         #print("Se ejecuto add de FinishLine")
-        return Entity(
-            model='cube',
-            texture='finish_line.jpg',
-            collider = 'box',
-            scale=scale,
-            position=position,
-        )
+        return EntityElement.add(self, 'cube', 'box','assets/finish_line.jpg',scale=scale,position=position)
 
-class EntityGround(Entity):
+
+class EntityGround(EntityElement):
     '''Clase crea Entidad Ground que extiende de la interface Entity '''
 
     def add(self,position,scale)-> Entity:
         '''Metodo que inserta un elemento del juego, scale y position son tuplas'''
         #print("Se ejecuto add de Ground")
-        return Entity(
-            model='plane',
-            texture='street.jpg',
-            collider = 'mesh',
-            scale=scale,
-            position=position,
-        )
+        return EntityElement.add(self, 'plane', 'mesh','assets/street.jpg',scale=scale,position=position)
 
 
 #Fabricas Concretas
@@ -125,11 +152,15 @@ class Decoration(TrackElement):
 
 if __name__ == '__main__':
     
-    #app = Ursina()
-
     
-    entidad = Ground()
+    juego = Game()
+    
+    piso = EntityGround()
+    piso.add((0,0,0),(10,-2,50))
 
     #ground = entidad.create_element(entidad.Entities.GROUND.value.add((0,0,0),(10,-2,50)))
-    ground = entidad.create_element(entidad.Entities.GROUND)
+    #ground = entidad.create_element(entidad.Entities.GROUND.value.add((0,0,0),(10,-2,50)))
+
+
+    juego.runGame()
 

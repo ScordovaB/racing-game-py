@@ -86,8 +86,6 @@ acce_audio = Audio('assets/ferrari-488-pista-acceleration.mp3',
                    loop=False, autoplay=False)
 
 
-image = Sprite('assets/f1car.png', scale=(2, 2, .1), parent=camera.ui)
-
 car  = Entity(
     parent = camera.ui,
     model = 'cube',
@@ -206,8 +204,6 @@ def input(key):
         time.sleep(1)
 
         quit()
-
-# sw =Sprite('assets/final458/458recto.png',parent=camera.ui, scale=0.2, position=(0,-0.1)) #, scale=1, position=(0,0)
 
 
 start_time = time.time()
