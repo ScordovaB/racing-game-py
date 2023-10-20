@@ -6,19 +6,94 @@ from abc import ABC, abstractmethod
 from enum import Enum
 
 class GameUpdates(Entity):
+
+    # def __init__(self, game):
+    #     self.acc_audio = game.acc_audio
+    #     self.neutral_audio = game.neutral_audio
+    #     self.acce_audio = game.acce_audio
+    #     self.player = game.player
+    #     self.car = game.car
+    #     self.velocity = game.velocity
+    #     self.player_og_speed = game.player_og_speed
+
+    def change_speed(self):
+        return self.player_og_speed + self.velocity
+
+    def check_velocity(self):
+        '''Funcion que revisa velocidad y la disminuye en tiempo real'''
+        if self.velocity > 0:
+                self.velocity -= 1
+        if self.velocity < 0:
+            self.velocity = 0
+
     def input(self,key):
+        '''Metodo que recibe el input del teclado y mouse en tiempo real'''
+
         if key == 'escape':
+            time.sleep(1)
+            quit()
+    
+    # def update(self):
+    #     '''Metodo que actualiza el juego en tiempo real'''
+    
+    #     # Determine the car texture and velocity changes based on key presses
+    #     key_combinations = {
+    #         ('q', 'w'): ('assets/ferrari2pixel.png', (-0.001, 0, -0.001)),
+    #         ('e', 'w'): ('assets/ferrari3pixel.png', (0.001, 0, 0.001)),
+    #         ('e', 's'): ('assets/ferrari3pixel.png', (0.001, 0, 0.001)),
+    #         ('q', 's'): ('assets/ferrari2pixel.png', (-0.001, 0, -0.001)),
+    #         ('q',): ('assets/ferrari2pixel.png', (0, 0, 0)),
+    #         ('e',): ('assets/ferrari3pixel.png', (0, 0, 0)),
+    #         ('s',): ('assets/ferrari1pixel.png', (0, 0, 0)),
+    #         ('w',): ('assets/ferrari1pixel.png', (0, 0, 0)),
+    #         ('space',): ('assets/ferrari1pixel.png', (0, 0, 0)),
+    #     }
 
-                #end_time = time.time()
-                #elapsed_time = end_time - start_time
-                #print("Seconds:",round(elapsed_time,2))
+    #     #Check if any of the key combinations are pressed
+    #     current_keys = [key for key in key_combinations if all(held_keys[k] for k in key)]
 
-                time.sleep(1)
+    #     # Update car texture and mouse position based on the key combination
+    #     if current_keys:
+    #         #print(current_keys[0])
+
+    #         texture, mouse_position_change = key_combinations[current_keys[0]]
+    #         self.car.texture = texture
             
-                quit()
+    #         if 'w' in current_keys[0] and not self.acc_audio.playing:
+    #             self.neutral_audio.stop()
+    #             self.acc_audio.play()
+
+    #         if 'w' not in current_keys[0] and not self.neutral_audio.playing:
+    #             self.acc_audio.stop()
+    #             self.neutral_audio.play()
+            
+    #         if 'w' in current_keys[0]:
+    #             if self.velocity < 50:
+    #                 self.velocity += 0.1
+    #             self.player.speed = self.change_speed()
+
+    #         if 'q' in current_keys[0] or 'e' in current_keys[0]:
+    #             self.mouse.position += mouse_position_change
+
+    #     else:
+    #         # No valid key combination, decrease velocity
+    #         if not self.neutral_audio.playing:
+    #             self.acc_audio.stop()
+    #             self.neutral_audio.play()
+
+    #         self.player.speed = self.change_speed()
+    #         self.check_velocity()
+        
+    #     print("Velocidad:", self.velocity)
+
+
 
 class Game():
     '''Clase que crea el juego con Ursina'''
+
+    def instance_audios(self, audio_path):
+        return Audio(audio_path, loop=False, autoplay=False)
+
     def __init__(self):
 
         self.app = Ursina()
@@ -51,10 +126,13 @@ class Game():
             scale = (1.8,1,1),
             texture = 'assets/ferrari1pixel.png'
         )
+        #self.acc_audio = self.instance_audios('assets/ferrari-488-pista-primera.mp3')
+        self.acc_audio = Audio('assets/ferrari-488-pista-primera.mp3', loop=False, autoplay=False)
+        self.neutral_audio = Audio('assets/ferrari-488-pista-neutral.mp3', loop=False, autoplay=False)
+        self.acce_audio = Audio('assets/ferrari-488-pista-acceleration.mp3', loop=False, autoplay=False)
 
         #Game realtime updates, with function update and input
-        self.updates = GameUpdates()
-
+        #self.updates = GameUpdates()
 
     def runGame(self):
         self.app.run()
@@ -130,10 +208,18 @@ class EntityGround(EntityElement):
 
 
 #Fabricas Concretas
+# class Ground(TrackElement):
+
+#     class Entities(Enum):
+#         GROUND = EntityGround()
+
 class Ground(TrackElement):
 
     class Entities(Enum):
-        GROUND = EntityGround()
+        @classmethod
+        def GROUND(cls, arg1, arg2):
+            return EntityGround.add(cls,arg1, arg2)
+
 
 class FinishLine(TrackElement):
 
@@ -155,12 +241,21 @@ if __name__ == '__main__':
     
     juego = Game()
     
-    piso = EntityGround()
-    piso.add((0,0,0),(10,-2,50))
+    #piso = EntityGround()
+    #piso.add((0,0,0),(10,-2,50))
+
+    ground_entity = Ground.Entities.GROUND((0,0,0),(10,-2,50))
+
+    
+    pared_trasera = EntityWall()
+    pared_trasera.add((0, .5, -25),(10, 1.2, .1))
+
+
 
     #ground = entidad.create_element(entidad.Entities.GROUND.value.add((0,0,0),(10,-2,50)))
     #ground = entidad.create_element(entidad.Entities.GROUND.value.add((0,0,0),(10,-2,50)))
 
+    updates = GameUpdates()
 
     juego.runGame()
 

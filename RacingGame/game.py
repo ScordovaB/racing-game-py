@@ -97,100 +97,68 @@ car  = Entity(
 velocity = 0
 player_og_speed =5
 
-def update():
 
+def check_velocity():
     global velocity
-    # Block RIGHT and LEFT movement
-    input_handler.bind('a', 'l')
-    input_handler.bind('d', 'b')
-
-    if held_keys['w'] and not acc_audio.playing:
-        neutral_audio.stop()
-        acc_audio.play()    
-    
-    if held_keys['q'] and held_keys['w']:
-
-        if velocity<50:
-            velocity +=0.1
-        player.speed = player_og_speed + velocity
-        
-        car.texture = 'assets/ferrari1pixel.png'
-        car.texture = 'assets/ferrari2pixel.png'
-        mouse.position -= (0.001,0,0.001)
-        
-    
-    elif held_keys['e'] and held_keys['w']:
-        
-        if velocity<50:
-            velocity +=0.1
-        player.speed = player_og_speed + velocity
-
-        car.texture = 'assets/ferrari1pixel.png'
-        car.texture = 'assets/ferrari3pixel.png'
-        mouse.position += (0.001,0,0.001)
-
-
-    elif not held_keys['w'] and not neutral_audio.playing:
-        acc_audio.stop()
-        neutral_audio.play()
-        
-    elif held_keys['e'] and held_keys['s']:
-        
-        #velocity -=0.01
-    
-        car.texture = 'assets/ferrari1pixel.png'
-        car.texture = 'assets/ferrari3pixel.png'
-        mouse.position += (0.001,0,0.001)
-
-    elif held_keys['q'] and held_keys['s']:
-
-        #velocity -=0.01
-
-        car.texture = 'assets/ferrari1pixel.png'
-        car.texture = 'assets/ferrari2pixel.png'
-        mouse.position -= (0.001,0,0.001)
-
-    elif held_keys['q'] :
-        
-        #print("presionando q")
-        car.texture = 'assets/ferrari1pixel.png'
-        car.texture = 'assets/ferrari2pixel.png'
-        
-    elif held_keys['e']:
-        #mouse.position += (0.001,0,0.001)
-        car.texture = 'assets/ferrari1pixel.png'
-        car.texture = 'assets/ferrari3pixel.png'
-
-    elif held_keys['s']:
-        
-        #velocity -=0.01
-        
-
-        car.texture = 'assets/ferrari1pixel.png'
-    
-    elif held_keys['w']:
-
-        if velocity<50:
-            velocity +=0.1
-        player.speed = player_og_speed + velocity
-        
-        car.texture = 'assets/ferrari1pixel.png'
-    
-    elif held_keys['space']:
+    if velocity > 0:
+            velocity -= 1
+    if velocity < 0:
         velocity = 0
-        car.texture = 'assets/ferrari1pixel.png'
-    
-    else:
-        #print("nada")
-        print("Velocidad:",velocity)
-        
-        if velocity>0:
-            velocity-=1
-        if velocity<0:
-            velocity=0
-    
-    player.speed = player_og_speed + velocity
 
+
+def update():
+    global velocity
+    
+    # Determine the car texture and velocity changes based on key presses
+    key_combinations = {
+        ('q', 'w'): ('assets/ferrari2pixel.png', (-0.001, 0, -0.001)),
+        ('e', 'w'): ('assets/ferrari3pixel.png', (0.001, 0, 0.001)),
+        ('e', 's'): ('assets/ferrari3pixel.png', (0.001, 0, 0.001)),
+        ('q', 's'): ('assets/ferrari2pixel.png', (-0.001, 0, -0.001)),
+        ('q',): ('assets/ferrari2pixel.png', (0, 0, 0)),
+        ('e',): ('assets/ferrari3pixel.png', (0, 0, 0)),
+        ('s',): ('assets/ferrari1pixel.png', (0, 0, 0)),
+        ('w',): ('assets/ferrari1pixel.png', (0, 0, 0)),
+        ('space',): ('assets/ferrari1pixel.png', (0, 0, 0)),
+    }
+
+    #Check if any of the key combinations are pressed
+    current_keys = [key for key in key_combinations if all(held_keys[k] for k in key)]
+
+    # Update car texture and mouse position based on the key combination
+    if current_keys:
+        #print(current_keys[0])
+
+        texture, mouse_position_change = key_combinations[current_keys[0]]
+        car.texture = texture
+        
+        if 'w' in current_keys[0] and not acc_audio.playing:
+            neutral_audio.stop()
+            acc_audio.play()
+
+        if 'w' not in current_keys[0] and not neutral_audio.playing:
+            acc_audio.stop()
+            neutral_audio.play()
+        
+        if 'w' in current_keys[0]:
+            if velocity < 50:
+                velocity += 0.1
+            player.speed = player_og_speed + velocity
+
+        if 'q' in current_keys[0] or 'e' in current_keys[0]:
+            mouse.position += mouse_position_change
+
+    else:
+        # No valid key combination, decrease velocity
+        if not neutral_audio.playing:
+            acc_audio.stop()
+            neutral_audio.play()
+
+        player.speed = player_og_speed + velocity
+        
+        check_velocity()
+    
+    print("Velocidad:", velocity)
 # mouse.locked= True
 
 # Close button game
