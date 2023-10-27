@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from enum import Enum
 
 class GameUpdates(Entity):
-
+    
     # def __init__(self, game):
     #     self.acc_audio = game.acc_audio
     #     self.neutral_audio = game.neutral_audio
@@ -26,13 +26,9 @@ class GameUpdates(Entity):
         if self.velocity < 0:
             self.velocity = 0
 
-    def input(self,key):
-        '''Metodo que recibe el input del teclado y mouse en tiempo real'''
+    def update(self):
+        print("self.velocity")
 
-        if key == 'escape':
-            time.sleep(1)
-            quit()
-    
     # def update(self):
     #     '''Metodo que actualiza el juego en tiempo real'''
     
@@ -86,6 +82,41 @@ class GameUpdates(Entity):
         
     #     print("Velocidad:", self.velocity)
 
+class GameInputs(Entity):
+
+    def input(self,key):
+        '''Metodo que recibe el input del teclado y mouse en tiempo real'''
+
+        if key == 'escape':
+            time.sleep(1)
+            quit()
+
+class GameSky():
+    '''Clase que crea el cielo del juego'''
+
+    def __init__(self):
+        self.sky = Sky()
+        self.sky.texture = 'sky_sunset'
+
+    def change_sky_default(self):
+        '''Metodo que cambia el cielo del juego'''
+        self.sky.texture = 'sky_default'
+
+class GameCar(Entity):
+    '''Clase que crea el carro del juego'''
+
+    def __init__(self):
+        
+        self.car = Entity(
+            parent = camera.ui,
+            model = 'cube',
+            position = (0,0),
+            scale = (1.8,1,1),
+            texture = 'assets/ferrari1pixel.png'
+        )
+    def changeTexture(self, texture):
+        '''Metodo que cambia la textura del carro'''
+        self.car.texture = texture
 
 
 class Game():
@@ -112,28 +143,29 @@ class Game():
         #self.camera.fov = 90
 
         #Darker Sky
-        self.sky = Sky()
-        self.sky.texture = 'sky_sunset'
+        self.sky = GameSky()
         
         #make globals velocity variables
         self.velocity = 0
         self.player_og_speed =5
 
-        self.car  = Entity(
-            parent = camera.ui,
-            model = 'cube',
-            position = (0,0),
-            scale = (1.8,1,1),
-            texture = 'assets/ferrari1pixel.png'
-        )
-        #self.acc_audio = self.instance_audios('assets/ferrari-488-pista-primera.mp3')
-        self.acc_audio = Audio('assets/ferrari-488-pista-primera.mp3', loop=False, autoplay=False)
-        self.neutral_audio = Audio('assets/ferrari-488-pista-neutral.mp3', loop=False, autoplay=False)
-        self.acce_audio = Audio('assets/ferrari-488-pista-acceleration.mp3', loop=False, autoplay=False)
+        self.car  = GameCar()
+        #self.car.changeTexture('assets/ferrari2pixel.png')
+        
+        self.acc_audio = self.instance_audios('assets/ferrari-488-pista-primera.mp3')
+        self.neutral_audio = self.instance_audios('assets/ferrari-488-pista-neutral.mp3')
+        self.acce_audio = self.instance_audios('assets/ferrari-488-pista-acceleration.mp3')
+
+
+        #self.acc_audio = Audio('assets/ferrari-488-pista-primera.mp3', loop=False, autoplay=False)
+        #self.neutral_audio = Audio('assets/ferrari-488-pista-neutral.mp3', loop=False, autoplay=False)
+        #self.acce_audio = Audio('assets/ferrari-488-pista-acceleration.mp3', loop=False, autoplay=False)
 
         #Game realtime updates, with function update and input
-        #self.updates = GameUpdates()
-
+        self.updates = GameUpdates()
+        #self.app._update = self.updates.update
+        self.inputs = GameInputs()
+        
     def runGame(self):
         self.app.run()
         
@@ -254,8 +286,6 @@ if __name__ == '__main__':
 
     #ground = entidad.create_element(entidad.Entities.GROUND.value.add((0,0,0),(10,-2,50)))
     #ground = entidad.create_element(entidad.Entities.GROUND.value.add((0,0,0),(10,-2,50)))
-
-    updates = GameUpdates()
 
     juego.runGame()
 

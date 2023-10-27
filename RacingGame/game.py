@@ -97,6 +97,8 @@ car  = Entity(
 velocity = 0
 player_og_speed =5
 
+def upadate_player_speed():
+    player.speed = player_og_speed + velocity
 
 def check_velocity():
     global velocity
@@ -108,7 +110,8 @@ def check_velocity():
 
 def update():
     global velocity
-    
+    print("Velocidad:", velocity)
+
     # Determine the car texture and velocity changes based on key presses
     key_combinations = {
         ('q', 'w'): ('assets/ferrari2pixel.png', (-0.001, 0, -0.001)),
@@ -143,7 +146,9 @@ def update():
         if 'w' in current_keys[0]:
             if velocity < 50:
                 velocity += 0.1
-            player.speed = player_og_speed + velocity
+                
+            #player.speed = player_og_speed + velocity
+            upadate_player_speed()
 
         if 'q' in current_keys[0] or 'e' in current_keys[0]:
             mouse.position += mouse_position_change
@@ -154,11 +159,10 @@ def update():
             acc_audio.stop()
             neutral_audio.play()
 
-        player.speed = player_og_speed + velocity
-        
+        #player.speed = player_og_speed + velocity
+        upadate_player_speed()
         check_velocity()
-    
-    print("Velocidad:", velocity)
+
 # mouse.locked= True
 
 # Close button game
