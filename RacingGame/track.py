@@ -2,7 +2,6 @@ from __future__ import annotations
 from ursina import *
 from ursina.prefabs.first_person_controller import FirstPersonController
 import time
-
 from abc import ABC, abstractmethod, abstractproperty
 from enum import Enum
 
@@ -19,12 +18,8 @@ class Structure(ABC):
         self._texture = path
         self._collider = collider
         self._scale = (10, 0, 50)
-        print(self._texture)
-        print('self._texture?')
 
     def create_entity(self) -> Entity:
-        print('llego create')
-        print(self._texture)
         return Entity(
             model=self._model,
             texture=self._texture,
@@ -36,7 +31,7 @@ class Structure(ABC):
 
 class Asphalt(Structure):
     def __init__(self):
-        super().__init__('street.jpg', 'plane', 'mesh')
+        super().__init__('asfalto.jpg', 'plane', 'mesh')
 
 
 class FinishLine(Structure):
@@ -75,7 +70,7 @@ class Barrier(Structure):
 
 class Entities(ABC):
     @property
-    def Structure(self):
+    def structure(self):
         return self._structure
 
     def set_scale(self, scale: tuple) -> None:
@@ -133,35 +128,67 @@ class Construction:
         print(product)
         self._product = product
 
-    def map(self) -> None:
+    def map(self) -> Entity:
         self.product.set_scale((100, 0, 500))
-        self.product.set_position((0, 0, 0))
+        self.product.set_position((40, 0, 0))
+        return self.create()
 
     def create(self) -> Entity:
-        print('llego consturctor')
-        print(self._product._structure.create_entity())
         return self._product._structure.create_entity()
 
-    # def long_straight(self) -> None:
-    #     self.product.set_position()
-    #     self.product.set_scale()
+    def x_long_straight(self, position: tuple) -> Entity:
+        self.product.set_position(position)
+        self.product.set_scale((15, 0, 50))
+        return self.create()
 
-    # def short_straight(self) -> None:
-    #     self.product.set_position()
-    #     self.product.set_scale()
+    def x_short_straight(self, position: tuple) -> Entity:
+        self.product.set_position(position)
+        self.product.set_scale((15, 0, 30))
+        return self.create()
+
+    def z_long_straight(self, position: tuple) -> Entity:
+        self.product.set_position(position)
+        self.product.set_scale((50, 0, 15))
+        return self.create()
+
+    def z_short_straight(self, position: tuple) -> Entity:
+        self.product.set_position(position)
+        self.product.set_scale((30, 0, 15))
+        return self.create()
 
     class Instructions(Enum):
         MAP = 'self.map()'
+        X_L_STRAIGHT = 'self.x_long_straight({})'
+        Z_L_STRAIGHT = 'self.z_long_straight({})'
+        X_S_STRAIGHT = 'self.x_short_straight({})'
+        Z_S_STRAIGHT = 'self.z_short_straight({})'
 
-    def iniciar_montaje(self, tipo: Instructions):
-        eval(tipo.value)
+    def start_construction(self, type: Instructions, position: tuple):
+        if (position != None):
+            return eval(type.value.format(position))
+        return eval(type.value)
 
 
 def track():
     track = Construction()
     track.product = Ground(Ground.GroundType.GRASS)
-    track.iniciar_montaje(track.Instructions.MAP)
-    ground = track.create()
+    ground = track.start_construction(track.Instructions.MAP, None)
+    track.product = Ground(Ground.GroundType.ASPHALT)
+    ground1 = track.start_construction(
+        track.Instructions.X_L_STRAIGHT, (0, 0.1, 0))
+    ground2 = track.start_construction(
+        track.Instructions.X_L_STRAIGHT, (0, 0.1, 50))
+    ground3 = track.start_construction(
+        track.Instructions.X_L_STRAIGHT, (0, 0.1, 100))
+
+    curve1 = track.start_construction(
+        track.Instructions.Z_S_STRAIGHT, (7.5, 0.1, 132.5))
+    curve2 = track.start_construction(
+        track.Instructions.X_S_STRAIGHT, (30, 0.1, 140))
+    curve3 = track.start_construction(
+        track.Instructions.Z_L_STRAIGHT, (62.5, 0.1, 147.5))
+
+    # ground = track.create()
 
     # print(ground.position)
     # print(ground.texture)

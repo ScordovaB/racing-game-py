@@ -30,14 +30,15 @@ sky.texture = 'sky_sunset'
 
 
 track()
-time.sleep(1)
 
-acc_audio = Audio('assets/audio/ferrari-488-pista-primera.mp3',
-                  loop=False, autoplay=False)
+acc_from_0_audio = Audio('assets/audio/ferrari-488-pista-primera.mp3',
+                         loop=False, autoplay=False)
 neutral_audio = Audio('assets/audio/ferrari-488-pista-neutral.mp3',
                       loop=False, autoplay=False)
 acce_audio = Audio('assets/audio/ferrari-488-pista-acceleration.mp3',
                    loop=False, autoplay=False)
+dec_audio = Audio('assets/audio/ferrari-488-pista-decelerate.mp3',
+                  loop=False, autoplay=False)
 
 
 car = Entity(
@@ -59,7 +60,9 @@ def upadate_player_speed():
 def check_velocity():
     global velocity
     if velocity > 0:
+        time.sleep(0.1)
         velocity -= 1
+        player.position += (player.forward.x, 0, player.forward.z)
     if velocity < 0:
         velocity = 0
 
@@ -92,13 +95,15 @@ def update():
         texture, mouse_position_change = key_combinations[current_keys[0]]
         car.texture = texture
 
-        if 'w' in current_keys[0] and not acc_audio.playing:
+        if 'w' in current_keys[0] and not acc_from_0_audio.playing:
+            dec_audio.stop()
             neutral_audio.stop()
-            acc_audio.play()
+            acc_from_0_audio.play()
 
-        if 'w' not in current_keys[0] and not neutral_audio.playing:
-            acc_audio.stop()
-            neutral_audio.play()
+        # if 'w' not in current_keys[0] and not neutral_audio.playing and velocity == 0:
+        #     dec_audio.stop()
+        #     acc_from_0_audio.stop()
+        #     neutral_audio.play()
 
         if 'w' in current_keys[0]:
             if velocity < 50:
@@ -112,10 +117,15 @@ def update():
 
     else:
         # No valid key combination, decrease velocity
-        if not neutral_audio.playing:
-            acc_audio.stop()
+        if not neutral_audio.playing and velocity == 0:
+            dec_audio.stop()
+            acc_from_0_audio.stop()
             neutral_audio.play()
 
+        if not dec_audio.playing and velocity > 0:
+            neutral_audio.stop()
+            acc_from_0_audio.stop()
+            dec_audio.play()
         # player.speed = player_og_speed + velocity
         upadate_player_speed()
         check_velocity()
