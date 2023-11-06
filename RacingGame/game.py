@@ -48,8 +48,9 @@ car = Entity(
     scale=(1.8, 1, 1),
     texture='assets/images/ferrari1pixel.png'
 )
-# make a global velocity variable
+# make a global variables for velocity, time and player speed
 velocity = 0
+realtime =0
 player_og_speed = 5
 
 
@@ -67,9 +68,23 @@ def check_velocity():
         velocity = 0
 
 
+velocity_text2 = Text(text=velocity, position=(-.6, 0.3),scale=2, color=color.white)
+timer = Text(text=velocity, position=(-0.6, 0.4), scale=2, color=color.white)
+
+
 def update():
     global velocity
+    global realtime
     print("Velocidad:", velocity)
+    realtime += time.dt
+
+    velocity_text2.text = str(round(velocity, 2))
+    timer.text = str(round(realtime, 2))
+    #Block RIGHT and LEFT movement
+    input_handler.bind('a','l')
+    input_handler.bind('d','b')
+
+    
 
     # Determine the car texture and velocity changes based on key presses
     key_combinations = {
@@ -85,12 +100,11 @@ def update():
     }
 
     # Check if any of the key combinations are pressed
-    current_keys = [key for key in key_combinations if all(
-        held_keys[k] for k in key)]
+    current_keys = [key for key in key_combinations if all(held_keys[k] for k in key)]
 
     # Update car texture and mouse position based on the key combination
     if current_keys:
-        # print(current_keys[0])
+        #print(current_keys[0])
 
         texture, mouse_position_change = key_combinations[current_keys[0]]
         car.texture = texture
@@ -150,7 +164,9 @@ def input(key):
 start_time = time.time()
 
 time_text = Text(text='Time:', position=(-0.8, 0.4),
-                 scale=2, color=color.black)
+                 scale=2, color=color.white)
+velocity_text = Text(text='Velocity:', position=(-.8, 0.3),
+                     scale=2, color=color.white)
 # time_text.create_background(padding=(.5,.25),radius=Text.size/2)
 
 
