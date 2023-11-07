@@ -15,7 +15,7 @@ player = FirstPersonController(
     jump_height=0,
     speed=5
 )
-
+finish_timeline = Entity(model='cube', scale=(18, .3, .5), position=(0, 0, -30), collider = 'box', texture='assets/images/finish_line.jpg')
 # Player position at the start
 player.position = (0, 10, -20)
 # Cursor invisible
@@ -54,6 +54,7 @@ realtime =0
 player_og_speed = 5
 
 
+
 def upadate_player_speed():
     player.speed = player_og_speed + velocity
 
@@ -77,6 +78,10 @@ def update():
     global realtime
     print("Velocidad:", velocity)
     realtime += time.dt
+
+    if player.intersects(finish_timeline).hit:
+        print("Lap time:", round(realtime, 2))
+        realtime = 0
 
     velocity_text2.text = str(round(velocity, 2))
     timer.text = str(round(realtime, 2))
@@ -144,11 +149,8 @@ def update():
         upadate_player_speed()
         check_velocity()
 
-# mouse.locked= True
 
 # Close button game
-
-
 def input(key):
     if key == 'escape':
 
