@@ -3,6 +3,7 @@ from ursina import *
 from ursina.prefabs.first_person_controller import FirstPersonController
 import time
 from track import track
+from highscores import HighScore, HighScoreCaretaker, HighScoreMemento
 
 
 # Instanciamos la clase Ursina
@@ -53,7 +54,21 @@ velocity = 0
 realtime =0
 player_og_speed = 5
 
+highscore = HighScore()
+caretaker = HighScoreCaretaker()
+highscore_file = './RacingGame/highscores.json'
 
+def update_highscore(score:float,highscore:HighScore, caretaker:HighScoreCaretaker, filename:str) -> None:
+    #Load highscore
+    caretaker.load_lap_time(highscore, filename)
+    #Update highscore with new one
+    new_high = score
+    if new_high > highscore.score:
+        highscore.score = new_high
+        caretaker.save_lap_time(highscore, filename)
+        print(f"New high score: {highscore.score}")
+
+    
 
 def upadate_player_speed():
     player.speed = player_og_speed + velocity
@@ -76,15 +91,18 @@ timer = Text(text=velocity, position=(-0.6, 0.4), scale=2, color=color.white)
 def update():
     global velocity
     global realtime
-    print("Velocidad:", velocity)
+    #print("Velocidad:", velocity)
+    velocity_text2.text = str(round(velocity, 2))
+    timer.text = str(round(realtime, 2))
+    
     realtime += time.dt
 
     if player.intersects(finish_timeline).hit:
         print("Lap time:", round(realtime, 2))
+        if round(realtime, 2) > 0.5:
+            update_highscore(round(realtime, 2), highscore, caretaker, highscore_file)
         realtime = 0
-
-    velocity_text2.text = str(round(velocity, 2))
-    timer.text = str(round(realtime, 2))
+    
     #Block RIGHT and LEFT movement
     input_handler.bind('a','l')
     input_handler.bind('d','b')
