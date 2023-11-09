@@ -16,7 +16,8 @@ player = FirstPersonController(
     jump_height=0,
     speed=5
 )
-finish_timeline = Entity(model='cube', scale=(18, .3, .5), position=(0, 0, -30), collider = 'box', texture='assets/images/finish_line.jpg')
+finish_timeline = Entity(model='cube', scale=(18, .3, .5), position=(
+    0, 0, -30), collider='box', texture='assets/images/finish_line.jpg')
 # Player position at the start
 player.position = (0, 10, -20)
 # Cursor invisible
@@ -51,24 +52,24 @@ car = Entity(
 )
 # make a global variables for velocity, time and player speed
 velocity = 0
-realtime =0
+realtime = 0
 player_og_speed = 5
 
 highscore = HighScore()
 caretaker = HighScoreCaretaker()
 highscore_file = './RacingGame/highscores.json'
 
-def update_highscore(score:float,highscore:HighScore, caretaker:HighScoreCaretaker, filename:str) -> None:
-    #Load highscore
+
+def update_highscore(score: float, highscore: HighScore, caretaker: HighScoreCaretaker, filename: str) -> None:
+    # Load highscore
     caretaker.load_lap_time(highscore, filename)
-    #Update highscore with new one
+    # Update highscore with new one
     new_high = score
     if new_high > highscore.score:
         highscore.score = new_high
         caretaker.save_lap_time(highscore, filename)
         print(f"New high score: {highscore.score}")
 
-    
 
 def upadate_player_speed():
     player.speed = player_og_speed + velocity
@@ -79,35 +80,38 @@ def check_velocity():
     if velocity > 0:
         time.sleep(0.1)
         velocity -= 1
-        player.position += (player.forward.x, 0, player.forward.z)
+        player.position -= ((player.forward.x, 0, player.forward.z))
     if velocity < 0:
         velocity = 0
 
 
-velocity_text2 = Text(text=velocity, position=(-.6, 0.3),scale=2, color=color.white)
+velocity_text2 = Text(text=velocity, position=(-.6, 0.3),
+                      scale=2, color=color.white)
 timer = Text(text=velocity, position=(-0.6, 0.4), scale=2, color=color.white)
 
 
 def update():
     global velocity
     global realtime
-    #print("Velocidad:", velocity)
+    # print("Velocidad:", velocity)
     velocity_text2.text = str(round(velocity, 2))
     timer.text = str(round(realtime, 2))
-    
+
     realtime += time.dt
 
     if player.intersects(finish_timeline).hit:
         print("Lap time:", round(realtime, 2))
         if round(realtime, 2) > 0.5:
-            update_highscore(round(realtime, 2), highscore, caretaker, highscore_file)
+            update_highscore(round(realtime, 2), highscore,
+                             caretaker, highscore_file)
         realtime = 0
-    
-    #Block RIGHT and LEFT movement
-    input_handler.bind('a','l')
-    input_handler.bind('d','b')
 
-    
+    if (player.y != 0.0):
+        player.y = 0.0
+
+    # Block RIGHT and LEFT movement
+    input_handler.bind('a', 'l')
+    input_handler.bind('d', 'b')
 
     # Determine the car texture and velocity changes based on key presses
     key_combinations = {
@@ -123,11 +127,12 @@ def update():
     }
 
     # Check if any of the key combinations are pressed
-    current_keys = [key for key in key_combinations if all(held_keys[k] for k in key)]
+    current_keys = [key for key in key_combinations if all(
+        held_keys[k] for k in key)]
 
     # Update car texture and mouse position based on the key combination
     if current_keys:
-        #print(current_keys[0])
+        # print(current_keys[0])
 
         texture, mouse_position_change = key_combinations[current_keys[0]]
         car.texture = texture
@@ -137,20 +142,25 @@ def update():
             neutral_audio.stop()
             acc_from_0_audio.play()
 
-        # if 'w' not in current_keys[0] and not neutral_audio.playing and velocity == 0:
-        #     dec_audio.stop()
-        #     acc_from_0_audio.stop()
-        #     neutral_audio.play()
-
         if 'w' in current_keys[0]:
             if velocity < 50:
                 velocity += 0.1
 
+            if 'q' in current_keys[0]:
+                player.rotate((0, -1, 0))
+            if 'e' in current_keys[0]:
+                player.rotate((0, 1, 0))
+
             # player.speed = player_og_speed + velocity
             upadate_player_speed()
 
-        if 'q' in current_keys[0] or 'e' in current_keys[0]:
-            mouse.position += mouse_position_change
+        if 's' in current_keys[0]:
+
+            if 'q' in current_keys[0]:
+                player.rotate((0, 1, 0))
+
+            if 'e' in current_keys[0]:
+                player.rotate((0, -1, 0))
 
     else:
         # No valid key combination, decrease velocity
