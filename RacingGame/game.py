@@ -86,7 +86,7 @@ def check_velocity():
         held_keys['p'] = False
 
 
-velocity_text2 = Text(text=velocity, position=(-.6, 0.3),
+velocity_text2 = Text(text=velocity, position=(-0.6, 0.3),
                       scale=2, color=color.white)
 timer = Text(text=velocity, position=(-0.6, 0.4), scale=2, color=color.white)
 
@@ -116,16 +116,16 @@ def update():
 
     # Determine the car texture and velocity changes based on key presses
     key_combinations = {
-        ('q', 'w'): ('assets/images/ferrari2pixel.png', (0, -1.5, 0)),
-        ('e', 'w'): ('assets/images/ferrari3pixel.png', (0, 1.5, 0)),
-        ('e', 's'): ('assets/images/ferrari3pixel.png', (0, -1.5, 0)),
-        ('q', 's'): ('assets/images/ferrari2pixel.png', (0, 1.5, 0)),
-        ('q',): ('assets/images/ferrari2pixel.png', (0, 0, 0)),
-        ('e',): ('assets/images/ferrari3pixel.png', (0, 0, 0)),
-        ('s',): ('assets/images/ferrari1pixel.png', (0, 0, 0)),
-        ('w',): ('assets/images/ferrari1pixel.png', (0, 0, 0)),
-        ('p',): ('assets/images/ferrari1pixel.png', (0, 0, 0)),
-        ('space',): ('assets/images/ferrari1pixel.png', (0, 0, 0)),
+        ('q', 'w'): ('assets/images/ferrari2pixel.png'),
+        ('e', 'w'): ('assets/images/ferrari3pixel.png'),
+        ('e', 's'): ('assets/images/ferrari3pixel.png'),
+        ('q', 's'): ('assets/images/ferrari2pixel.png'),
+        ('q',): ('assets/images/ferrari2pixel.png'),
+        ('e',): ('assets/images/ferrari3pixel.png'),
+        ('s',): ('assets/images/ferrari1pixel.png'),
+        ('w',): ('assets/images/ferrari1pixel.png'),
+        ('p',): ('assets/images/ferrari1pixel.png'),
+        ('space',): ('assets/images/ferrari1pixel.png'),
     }
 
     # Check if any of the key combinations are pressed
@@ -136,7 +136,7 @@ def update():
     if current_keys:
         # print(current_keys[0])
 
-        texture, position_change = key_combinations[current_keys[0]]
+        texture = key_combinations[current_keys[0]]
         car.texture = texture
 
         if 'w' in current_keys[0] and not acc_from_0_audio.playing:
