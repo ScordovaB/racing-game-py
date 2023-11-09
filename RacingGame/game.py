@@ -54,6 +54,7 @@ car = Entity(
 velocity = 0
 realtime = 0
 player_og_speed = 5
+delante = False
 
 highscore = HighScore()
 caretaker = HighScoreCaretaker()
@@ -78,11 +79,11 @@ def upadate_player_speed():
 def check_velocity():
     global velocity
     if velocity > 0:
-        time.sleep(0.1)
-        velocity -= 1
-        player.position -= ((player.forward.x, 0, player.forward.z))
+        velocity -= .3
+        held_keys['p'] = True
     if velocity < 0:
         velocity = 0
+        held_keys['p'] = False
 
 
 velocity_text2 = Text(text=velocity, position=(-.6, 0.3),
@@ -115,14 +116,15 @@ def update():
 
     # Determine the car texture and velocity changes based on key presses
     key_combinations = {
-        ('q', 'w'): ('assets/images/ferrari2pixel.png', (-0.001, 0, -0.001)),
-        ('e', 'w'): ('assets/images/ferrari3pixel.png', (0.001, 0, 0.001)),
-        ('e', 's'): ('assets/images/ferrari3pixel.png', (-0.001, 0, -0.001)),
-        ('q', 's'): ('assets/images/ferrari2pixel.png', (0.001, 0, 0.001)),
+        ('q', 'w'): ('assets/images/ferrari2pixel.png', (0, -1.5, 0)),
+        ('e', 'w'): ('assets/images/ferrari3pixel.png', (0, 1.5, 0)),
+        ('e', 's'): ('assets/images/ferrari3pixel.png', (0, -1.5, 0)),
+        ('q', 's'): ('assets/images/ferrari2pixel.png', (0, 1.5, 0)),
         ('q',): ('assets/images/ferrari2pixel.png', (0, 0, 0)),
         ('e',): ('assets/images/ferrari3pixel.png', (0, 0, 0)),
         ('s',): ('assets/images/ferrari1pixel.png', (0, 0, 0)),
         ('w',): ('assets/images/ferrari1pixel.png', (0, 0, 0)),
+        ('p',): ('assets/images/ferrari1pixel.png', (0, 0, 0)),
         ('space',): ('assets/images/ferrari1pixel.png', (0, 0, 0)),
     }
 
@@ -134,33 +136,33 @@ def update():
     if current_keys:
         # print(current_keys[0])
 
-        texture, mouse_position_change = key_combinations[current_keys[0]]
+        texture, position_change = key_combinations[current_keys[0]]
         car.texture = texture
 
         if 'w' in current_keys[0] and not acc_from_0_audio.playing:
             dec_audio.stop()
             neutral_audio.stop()
             acc_from_0_audio.play()
+            held_keys['p'] = False
 
         if 'w' in current_keys[0]:
+            held_keys['p'] = False
             if velocity < 50:
                 velocity += 0.1
+            player.rotate((0, (held_keys['e'] - held_keys['q'])*1.5, 0))
 
-            if 'q' in current_keys[0]:
-                player.rotate((0, -1, 0))
-            if 'e' in current_keys[0]:
-                player.rotate((0, 1, 0))
-
-            # player.speed = player_og_speed + velocity
             upadate_player_speed()
 
         if 's' in current_keys[0]:
+            player.rotate((0, (held_keys['q'] - held_keys['e'])*1.5, 0))
 
-            if 'q' in current_keys[0]:
-                player.rotate((0, 1, 0))
-
-            if 'e' in current_keys[0]:
-                player.rotate((0, -1, 0))
+        if held_keys['p']:
+            player.rotate((0, (held_keys['e'] - held_keys['q'])*1.5, 0))
+            check_velocity()
+            if velocity == 0:
+                dec_audio.stop()
+                acc_from_0_audio.stop()
+                neutral_audio.play()
 
     else:
         # No valid key combination, decrease velocity
@@ -173,6 +175,7 @@ def update():
             neutral_audio.stop()
             acc_from_0_audio.stop()
             dec_audio.play()
+
         # player.speed = player_og_speed + velocity
         upadate_player_speed()
         check_velocity()
