@@ -2,149 +2,209 @@ from __future__ import annotations
 from ursina import *
 from ursina.prefabs.first_person_controller import FirstPersonController
 import time
+from track import track
+from highscores import HighScore, HighScoreCaretaker, HighScoreMemento
 
 
-
-
-
-#Instanciamos la clase Ursina
+# Instanciamos la clase Ursina
 
 app = Ursina()
 
-#Player 
+# Player
 player = FirstPersonController(
     collider='box',
     jump_height=0,
-    speed=30
+    speed=5
 )
-#Player position at the start
-player.position = (0,10,-20)
-#Cursor invisible
+finish_timeline = Entity(model='cube', scale=(18, .3, .5), position=(
+    0, 0, -30), collider='box', texture='assets/images/finish_line.jpg')
+# Player position at the start
+player.position = (0, 10, -20)
+# Cursor invisible
 player.cursor.visible = False
 player.cursor.enabled = False
+
 camera.fov = 90
 
-#Cielo oscurecido
+# Cielo oscurecido
 sky = Sky()
 sky.texture = 'sky_sunset'
 
-#Piso
-ground = Entity(
-    model='plane',
-    texture='street.jpg',
-    collider = 'mesh',
-    scale=(10,-2,50),
-)
 
-#sw = Sprite('assets/f1car1.png',parent=camera.ui, scale=0.3, position=(0,-0.1)) #, scale=1, position=(0,0)
+track()
 
-#Pared
-pillar0 = Entity(
-    model='cube',
-    texture = 'concrete.jpg',
-    scale=(10,1.2,.1),
-    position=(0,.5,-25),
-    collider='box'
-)
-pillar1 = Entity(
-    model='cube',
-    texture = 'concrete.jpg',
-    scale=(.1,1.2,50),
-    position=(5,.5,0),
-    collider='box'
-)
+acc_from_0_audio = Audio('assets/audio/ferrari-488-pista-primera.mp3',
+                         loop=False, autoplay=False)
+neutral_audio = Audio('assets/audio/ferrari-488-pista-neutral.mp3',
+                      loop=False, autoplay=False)
+acce_audio = Audio('assets/audio/ferrari-488-pista-acceleration.mp3',
+                   loop=False, autoplay=False)
+dec_audio = Audio('assets/audio/ferrari-488-pista-decelerate.mp3',
+                  loop=False, autoplay=False)
 
-pillar2 = Entity(
-    model='cube',
-    texture = 'concrete.jpg',
-    scale=(.1,1.2,50),
-    position=(-5,.5,0),
-    collider='box'
-)
 
-#Finish line
-finish_line = Entity(
+car = Entity(
+    parent=camera.ui,
     model='cube',
-    texture = 'finish_line.jpg',
-    scale=(10,1.2,.1),
-    position=(0,10,25),
-    collider='box'
+    position=(0, 0),
+    scale=(1.8, 1, 1),
+    texture='assets/images/ferrari1pixel.png'
 )
-car  = Entity(
-    parent = camera.ui,
-    model = 'cube',
-    position = (0,0),
-    scale = (1.8,1,1),
-    texture = 'assets/ferrari1.png'
-)
+# make a global variables for velocity, time and player speed
+velocity = 0
+realtime = 0
+player_og_speed = 5
+delante = False
+
+highscore = HighScore()
+caretaker = HighScoreCaretaker()
+highscore_file = './RacingGame/highscores.json'
+
+
+def update_highscore(score: float, highscore: HighScore, caretaker: HighScoreCaretaker, filename: str) -> None:
+    # Load highscore
+    caretaker.load_lap_time(highscore, filename)
+    # Update highscore with new one
+    new_high = score
+    if new_high > highscore.score:
+        highscore.score = new_high
+        caretaker.save_lap_time(highscore, filename)
+        print(f"New high score: {highscore.score}")
+
+
+def upadate_player_speed():
+    player.speed = player_og_speed + velocity
+
+
+def check_velocity():
+    global velocity
+    if velocity > 0:
+        velocity -= .3
+        held_keys['p'] = True
+    if velocity < 0:
+        velocity = 0
+        held_keys['p'] = False
+
+
+velocity_text2 = Text(text=velocity, position=(-.6, 0.3),
+                      scale=2, color=color.white)
+timer = Text(text=velocity, position=(-0.6, 0.4), scale=2, color=color.white)
+
 
 def update():
-    #mouse.locked= True
-    
-    #Block RIGHT and LEFT movement
-    input_handler.bind('a','l')
-    input_handler.bind('d','b')
-    
-    if held_keys['left arrow'] and held_keys['w']:
+    global velocity
+    global realtime
+    # print("Velocidad:", velocity)
+    velocity_text2.text = str(round(velocity, 2))
+    timer.text = str(round(realtime, 2))
 
-        car.texture = 'assets/ferrari1.png'
-        car.texture = 'assets/ferrari2.png'
-        mouse.position -= (0.001,0,0.001)
+    realtime += time.dt
 
-    elif held_keys['left arrow'] and held_keys['s']:
+    if player.intersects(finish_timeline).hit:
+        print("Lap time:", round(realtime, 2))
+        if round(realtime, 2) > 0.5:
+            update_highscore(round(realtime, 2), highscore,
+                             caretaker, highscore_file)
+        realtime = 0
 
-        car.texture = 'assets/ferrari1.png'
-        car.texture = 'assets/ferrari2.png'
-        mouse.position -= (0.001,0,0.001)
+    if (player.y != 0.0):
+        player.y = 0.0
 
-    elif held_keys['left arrow'] :
+    # Block RIGHT and LEFT movement
+    input_handler.bind('a', 'l')
+    input_handler.bind('d', 'b')
 
-        car.texture = 'assets/ferrari1.png'
-        car.texture = 'assets/ferrari2.png'
-        
-    elif held_keys['right arrow']:
+    # Determine the car texture and velocity changes based on key presses
+    key_combinations = {
+        ('q', 'w'): ('assets/images/ferrari2pixel.png', (0, -1.5, 0)),
+        ('e', 'w'): ('assets/images/ferrari3pixel.png', (0, 1.5, 0)),
+        ('e', 's'): ('assets/images/ferrari3pixel.png', (0, -1.5, 0)),
+        ('q', 's'): ('assets/images/ferrari2pixel.png', (0, 1.5, 0)),
+        ('q',): ('assets/images/ferrari2pixel.png', (0, 0, 0)),
+        ('e',): ('assets/images/ferrari3pixel.png', (0, 0, 0)),
+        ('s',): ('assets/images/ferrari1pixel.png', (0, 0, 0)),
+        ('w',): ('assets/images/ferrari1pixel.png', (0, 0, 0)),
+        ('p',): ('assets/images/ferrari1pixel.png', (0, 0, 0)),
+        ('space',): ('assets/images/ferrari1pixel.png', (0, 0, 0)),
+    }
 
-        car.texture = 'assets/ferrari1.png'
-        car.texture = 'assets/ferrari3.png'
-        
-    elif held_keys['right arrow'] and held_keys['w']:
-        car.texture = 'assets/ferrari1.png'
-        car.texture = 'assets/ferrari3.png'
-        mouse.position += (0.001,0,0.001)
-        #pass
+    # Check if any of the key combinations are pressed
+    current_keys = [key for key in key_combinations if all(
+        held_keys[k] for k in key)]
 
-    elif held_keys['right arrow'] and held_keys['s']:
-        #pass
+    # Update car texture and mouse position based on the key combination
+    if current_keys:
+        # print(current_keys[0])
 
-        car.texture = 'assets/ferrari1.png'
-        car.texture = 'assets/ferrari3.png'
-        mouse.position += (0.001,0,0.001)
+        texture, position_change = key_combinations[current_keys[0]]
+        car.texture = texture
+
+        if 'w' in current_keys[0] and not acc_from_0_audio.playing:
+            dec_audio.stop()
+            neutral_audio.stop()
+            acc_from_0_audio.play()
+            held_keys['p'] = False
+
+        if 'w' in current_keys[0]:
+            held_keys['p'] = False
+            if velocity < 50:
+                velocity += 0.1
+            player.rotate((0, (held_keys['e'] - held_keys['q'])*1.5, 0))
+
+            upadate_player_speed()
+
+        if 's' in current_keys[0]:
+            player.rotate((0, (held_keys['q'] - held_keys['e'])*1.5, 0))
+
+        if held_keys['p']:
+            player.rotate((0, (held_keys['e'] - held_keys['q'])*1.5, 0))
+            check_velocity()
+            if velocity == 0:
+                dec_audio.stop()
+                acc_from_0_audio.stop()
+                neutral_audio.play()
+
+    else:
+        # No valid key combination, decrease velocity
+        if not neutral_audio.playing and velocity == 0:
+            dec_audio.stop()
+            acc_from_0_audio.stop()
+            neutral_audio.play()
+
+        if not dec_audio.playing and velocity > 0:
+            neutral_audio.stop()
+            acc_from_0_audio.stop()
+            dec_audio.play()
+
+        # player.speed = player_og_speed + velocity
+        upadate_player_speed()
+        check_velocity()
 
 
-
-#mouse.locked= True
-
-#Close button game
+# Close button game
 def input(key):
     if key == 'escape':
 
         end_time = time.time()
         elapsed_time = end_time - start_time
-        print("Seconds:",round(elapsed_time,2))
+        print("Seconds:", round(elapsed_time, 2))
 
         time.sleep(1)
-    
-        quit()
 
-#sw =Sprite('assets/final458/458recto.png',parent=camera.ui, scale=0.2, position=(0,-0.1)) #, scale=1, position=(0,0)
+        quit()
 
 
 start_time = time.time()
-time_text = Text(text='Time:',position=(-0.8,0.4),scale=2,color=color.black)
+
+time_text = Text(text='Time:', position=(-0.8, 0.4),
+                 scale=2, color=color.white)
+velocity_text = Text(text='Velocity:', position=(-.8, 0.3),
+                     scale=2, color=color.white)
+# time_text.create_background(padding=(.5,.25),radius=Text.size/2)
 
 
-#Audio
-audio = Audio('assets/TokyoDrift.mp3',loop=True, autoplay=False)
-mouse.locked= True
-#Start game
+# Audio
+audioSong = Audio('assets/audio/TokyoDrift.mp3', loop=True, autoplay=False)
+mouse.locked = True
+# Start game
 app.run()
