@@ -39,8 +39,12 @@ neutral_audio = Audio('assets/audio/ferrari-488-pista-neutral.mp3',
                       loop=False, autoplay=False)
 acce_audio = Audio('assets/audio/ferrari-488-pista-acceleration.mp3',
                    loop=False, autoplay=False)
+dec_to_0 = Audio('assets/audio/ferrari-488-pista-dec_primera.mp3',
+                 loop=False, autoplay=False)
 dec_audio = Audio('assets/audio/ferrari-488-pista-decelerate.mp3',
                   loop=False, autoplay=False)
+shift_audio = Audio('assets/audio/ferrari-488-pista-shift.mp3',
+                    loop=False, autoplay=False)
 
 
 car = Entity(
@@ -54,7 +58,7 @@ car = Entity(
 velocity = 0
 realtime = 0
 player_og_speed = 5
-delante = False
+first_gear = True
 
 highscore = HighScore()
 caretaker = HighScoreCaretaker()
@@ -79,7 +83,7 @@ def upadate_player_speed():
 def check_velocity():
     global velocity
     if velocity > 0:
-        velocity -= .3
+        velocity -= .2
         held_keys['p'] = True
     if velocity < 0:
         velocity = 0
@@ -140,15 +144,41 @@ def update():
         car.texture = texture
 
         if 'w' in current_keys[0] and not acc_from_0_audio.playing:
-            dec_audio.stop()
-            neutral_audio.stop()
-            acc_from_0_audio.play()
+
             held_keys['p'] = False
 
         if 'w' in current_keys[0]:
             held_keys['p'] = False
-            if velocity < 50:
+            if velocity < 100:
                 velocity += 0.1
+            if not acc_from_0_audio.playing and velocity < 30:
+                dec_to_0.stop()
+                dec_audio.stop()
+                neutral_audio.stop()
+                acce_audio.stop()
+                acc_from_0_audio.play()
+            if not acce_audio.playing and not shift_audio.playing and velocity > 30:
+                neutral_audio.stop()
+                dec_audio.stop()
+                acc_from_0_audio.stop()
+                dec_to_0.stop()
+                shift_audio.play()
+                acce_audio.play()
+            if not acce_audio.playing and not shift_audio.playing and velocity > 50:
+                neutral_audio.stop()
+                dec_audio.stop()
+                acc_from_0_audio.stop()
+                dec_to_0.stop()
+                shift_audio.play()
+                acce_audio.play()
+            if not acce_audio.playing and not shift_audio.playing and velocity > 70:
+                neutral_audio.stop()
+                dec_audio.stop()
+                acc_from_0_audio.stop()
+                dec_to_0.stop()
+                shift_audio.play()
+                acce_audio.play()
+
             player.rotate((0, (held_keys['e'] - held_keys['q'])*1.5, 0))
 
             upadate_player_speed()
@@ -160,20 +190,46 @@ def update():
             player.rotate((0, (held_keys['e'] - held_keys['q'])*1.5, 0))
             check_velocity()
             if velocity == 0:
-                dec_audio.stop()
+                dec_to_0.stop()
                 acc_from_0_audio.stop()
+                acce_audio.stop()
+                dec_audio.stop()
                 neutral_audio.play()
 
+        if not 'w' in current_keys[0] and not dec_to_0.playing and velocity < 30 and velocity > 0:
+            neutral_audio.stop()
+            acc_from_0_audio.stop()
+            shift_audio.stop()
+            acce_audio.stop()
+            dec_audio.stop()
+            shift_audio.play()
+            dec_to_0.play()
     else:
         # No valid key combination, decrease velocity
         if not neutral_audio.playing and velocity == 0:
-            dec_audio.stop()
+            dec_to_0.stop()
             acc_from_0_audio.stop()
+            shift_audio.stop()
+            acce_audio.stop()
+            dec_audio.stop()
             neutral_audio.play()
 
-        if not dec_audio.playing and velocity > 0:
+        if not dec_to_0.playing and velocity < 30 and velocity > 0:
             neutral_audio.stop()
             acc_from_0_audio.stop()
+            shift_audio.stop()
+            acce_audio.stop()
+            dec_audio.stop()
+            shift_audio.play()
+            dec_to_0.play()
+
+        if not dec_audio.playing and velocity > 30:
+            neutral_audio.stop()
+            acc_from_0_audio.stop()
+            shift_audio.stop()
+            acce_audio.stop()
+            dec_to_0.stop()
+            shift_audio.play()
             dec_audio.play()
 
         # player.speed = player_og_speed + velocity
