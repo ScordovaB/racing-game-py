@@ -4,6 +4,7 @@ from ursina.prefabs.first_person_controller import FirstPersonController
 import time
 from track import track
 from highscores import HighScore, HighScoreCaretaker, HighScoreMemento
+from menus import QuitMenu
 
 
 # Instanciamos la clase Ursina
@@ -57,6 +58,8 @@ car = Entity(
 # make a global variables for velocity, time and player speed
 velocity = 0
 realtime = 0
+rpm = 0
+gear = 1
 player_og_speed = 5
 first_gear = True
 
@@ -78,6 +81,26 @@ def update_highscore(score: float, highscore: HighScore, caretaker: HighScoreCar
 
 def upadate_player_speed():
     player.speed = player_og_speed + velocity
+    
+
+def change_rpm_gear():
+    global rpm
+    global gear
+    global velocity
+
+    # maximum of 8 gears
+    new_gear = min((velocity - 1) // 10 + 1, 8) if velocity >= 0 else 1
+
+    # Check if the gear has changed
+    if new_gear != gear:
+        rpm = 0
+        gear = new_gear
+    else:
+        rpm += velocity /2
+        # Set rpm based on velocity
+        #rpm = min(velocity * 10, 1000)
+    if rpm > 8000:
+        rpm = 8000
 
 
 def check_velocity():
@@ -89,18 +112,26 @@ def check_velocity():
         velocity = 0
         held_keys['p'] = False
 
+#On screen variable TEXT
+speedometer = Sprite(texture='assets/images/speedometer.png', scale=(0.1,0.1), parent=camera.ui, position=(.7, -.3))
+velocity_text2 = Text(text=velocity, position=(0.65, -0.23), scale=2, color=color.white)
+timer = Text(text=velocity, position=(-0.55, 0.4), scale=2, color=color.white)
+rpm_text = Text(text=rpm, position=(0.66,-0.3), scale=2, color=color.white)
+gear_text = Text(text=gear, position=(0.72, -0.42), scale=2, color=color.white)
 
-velocity_text2 = Text(text=velocity, position=(-0.6, 0.3),
-                      scale=2, color=color.white)
-timer = Text(text=velocity, position=(-0.6, 0.4), scale=2, color=color.white)
 
 
 def update():
     global velocity
     global realtime
+    global rpm
+    global gear
+
     # print("Velocidad:", velocity)
     velocity_text2.text = str(round(velocity, 2))
     timer.text = str(round(realtime, 2))
+    rpm_text.text = str(int(rpm))
+    gear_text.text = str(int(gear))
 
     realtime += time.dt
 
@@ -113,6 +144,8 @@ def update():
 
     if (player.y != 0.0):
         player.y = 0.0
+    
+    change_rpm_gear()
 
     # Block RIGHT and LEFT movement
     input_handler.bind('a', 'l')
@@ -237,6 +270,7 @@ def update():
         check_velocity()
 
 
+
 # Close button game
 def input(key):
     if key == 'escape':
@@ -245,18 +279,16 @@ def input(key):
         elapsed_time = end_time - start_time
         print("Seconds:", round(elapsed_time, 2))
 
-        time.sleep(1)
-
-        quit()
+        time.sleep(.5)
+        #Show mouse in screen for quitMenu interaction
+        mouse.locked = not mouse.locked
+        quitMenu = QuitMenu("Exit Game")
 
 
 start_time = time.time()
 
-time_text = Text(text='Time:', position=(-0.8, 0.4),
+time_text = Text(text='Lap Time:', position=(-0.8, 0.4),
                  scale=2, color=color.white)
-velocity_text = Text(text='Velocity:', position=(-.8, 0.3),
-                     scale=2, color=color.white)
-# time_text.create_background(padding=(.5,.25),radius=Text.size/2)
 
 
 # Audio
