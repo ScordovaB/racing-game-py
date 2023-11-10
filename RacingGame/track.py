@@ -31,7 +31,7 @@ class Structure(ABC):
 
 class Asphalt(Structure):
     def __init__(self):
-        super().__init__('asfalto.jpg', 'plane', 'mesh')
+        super().__init__('asphalt.jpg', 'plane', 'mesh')
 
 
 class FinishLine(Structure):
@@ -129,8 +129,8 @@ class Construction:
         self._product = product
 
     def map(self) -> Entity:
-        self.product.set_scale((100, 0, 500))
-        self.product.set_position((40, 0, 0))
+        self.product.set_scale((400, 0, 400))
+        self.product.set_position((185, 0, 0))
         return self.create()
 
     def create(self) -> Entity:
@@ -156,12 +156,24 @@ class Construction:
         self.product.set_scale((30, 0, 15))
         return self.create()
 
+    def z_diagonal(self, position: tuple) -> Entity:
+        self.product.set_position(position)
+        self.product.set_scale((15, 0, 2))
+        return self.create()
+
+    def x_diagonal(self, position: tuple) -> Entity:
+        self.product.set_position(position)
+        self.product.set_scale((2, 0, 15))
+        return self.create()
+
     class Instructions(Enum):
         MAP = 'self.map()'
         X_L_STRAIGHT = 'self.x_long_straight({})'
         Z_L_STRAIGHT = 'self.z_long_straight({})'
         X_S_STRAIGHT = 'self.x_short_straight({})'
         Z_S_STRAIGHT = 'self.z_short_straight({})'
+        Z_DIAGONAL = 'self.z_diagonal({})'
+        X_DIAGONAL = 'self.x_diagonal({})'
 
     def start_construction(self, type: Instructions, position: tuple):
         if (position != None):
@@ -174,79 +186,194 @@ def track():
     track.product = Ground(Ground.GroundType.GRASS)
     ground = track.start_construction(track.Instructions.MAP, None)
     track.product = Ground(Ground.GroundType.ASPHALT)
-    ground1 = track.start_construction(
+
+    straight1 = track.start_construction(
         track.Instructions.X_L_STRAIGHT, (0, 0.1, 0))
-    ground2 = track.start_construction(
+    straight2 = track.start_construction(
         track.Instructions.X_L_STRAIGHT, (0, 0.1, 50))
-    ground3 = track.start_construction(
+    straight3 = track.start_construction(
         track.Instructions.X_L_STRAIGHT, (0, 0.1, 100))
 
     curve1 = track.start_construction(
         track.Instructions.Z_S_STRAIGHT, (7.5, 0.1, 132.5))
     curve2 = track.start_construction(
-        track.Instructions.X_S_STRAIGHT, (30, 0.1, 140))
+        track.Instructions.Z_S_STRAIGHT, (37.5, 0.1, 132.5))
     curve3 = track.start_construction(
-        track.Instructions.Z_L_STRAIGHT, (62.5, 0.1, 147.5))
+        track.Instructions.X_S_STRAIGHT, (60, 0.1, 140))
+    curve4 = track.start_construction(
+        track.Instructions.Z_L_STRAIGHT, (77.5, 0.1, 162.5))
 
-    # ground = track.create()
+    straight4 = track.start_construction(
+        track.Instructions.Z_L_STRAIGHT, (127.5, 0.1, 162.5))
+    straight5 = track.start_construction(
+        track.Instructions.Z_L_STRAIGHT, (167.5, 0.1, 162.5))
 
-    # print(ground.position)
-    # print(ground.texture)
-    # print(ground.scale)
-    # print('aqui si')
+    curve5 = track.start_construction(
+        track.Instructions.X_L_STRAIGHT, (200, 0.1, 180))
+    curve6 = track.start_construction(
+        track.Instructions.Z_S_STRAIGHT, (222.5, 0.1, 197.5))
+    curve7 = track.start_construction(
+        track.Instructions.X_L_STRAIGHT, (245, 0.1, 180))
 
-    # app.run()
-    # #  Piso
-    # ground = Entities(
-    #     model='plane',
-    #     texture='grass.jpg',
-    #     collider='mesh',
-    #     scale=(100, 0, 500),
-    # )
-    # ground1 = Entities(
-    #     position=(0, 0.1, 0),
-    #     model='plane',
-    #     texture='street.jpg',
-    #     collider='mesh',
-    #     scale=(10, 0, 50),
-    # )
-    # ground2 = Entities(
-    #     position=(0, 0.1, 50),
-    #     model='plane',
-    #     texture='street.jpg',
-    #     collider='mesh',
-    #     scale=(10, 0, 50),
-    # )
+    straight6 = track.start_construction(
+        track.Instructions.X_L_STRAIGHT, (245, 0.1, 130))
 
-    # # Pared
-    # pillar0 = Entities(
-    #     model='cube',
-    #     texture='concrete.jpg',
-    #     scale=(10, 1.2, .1),
-    #     position=(0, .5, -25),
-    #     collider='box'
-    # )
-    # pillar1 = Entities(
-    #     model='cube',
-    #     texture='concrete.jpg',
-    #     scale=(.1, 1.2, 50),
-    #     position=(5, .5, 0),
-    #     collider='box'
-    # )
+    s1 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (243, 0.1, 104))
+    s2 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (241, 0.1, 102))
+    s3 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (239, 0.1, 100))
+    s4 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (237, 0.1, 98))
+    s5 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (235, 0.1, 96))
+    s6 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (233, 0.1, 94))
+    s7 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (231, 0.1, 92))
+    s8 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (229, 0.1, 90))
+    s9 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (227, 0.1, 88))
+    s10 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (225, 0.1, 86))
+    s11 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (223, 0.1, 84))
+    s12 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (221, 0.1, 82))
 
-    # pillar2 = Entities(
-    #     model='cube',
-    #     texture='concrete.jpg',
-    #     scale=(.1, 1.2, 50),
-    #     position=(-5, .5, 0),
-    #     collider='box'
-    # )
+    straight7 = track.start_construction(
+        track.Instructions.X_S_STRAIGHT, (219, 0.1, 66))
 
-    # # Finish line
-    # finish_line = Entities(
-    #     model='cube',
-    #     texture='rolex.png',
-    #     scale=(20, 6, .1),
-    #     position=(0, 13, 25),
-    #     collider='box'
-    # )
+    s13 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (221, 0.1, 50))
+    s14 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (223, 0.1, 48))
+    s15 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (225, 0.1, 46))
+    s16 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (227, 0.1, 44))
+    s17 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (229, 0.1, 42))
+    s18 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (231, 0.1, 40))
+    s19 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (233, 0.1, 38))
+    s20 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (235, 0.1, 36))
+    s21 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (237, 0.1, 34))
+    s22 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (239, 0.1, 32))
+    s23 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (241, 0.1, 30))
+    s24 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (243, 0.1, 28))
+
+    straight8 = track.start_construction(
+        track.Instructions.X_L_STRAIGHT, (243, 0.1, 2))
+    straight9 = track.start_construction(
+        track.Instructions.X_S_STRAIGHT, (243, 0.1, -38))
+
+    curve8 = track.start_construction(
+        track.Instructions.Z_L_STRAIGHT, (225.5, 0.1, -60.5))
+    curve9 = track.start_construction(
+        track.Instructions.X_S_STRAIGHT, (193, 0.1, -68))
+
+    d1 = track.start_construction(
+        track.Instructions.X_DIAGONAL, (201.5, 0.1, -77.5))
+    d2 = track.start_construction(
+        track.Instructions.X_DIAGONAL, (203.5, 0.1, -79.5))
+    d3 = track.start_construction(
+        track.Instructions.X_DIAGONAL, (205.5, 0.1, -81.5))
+    d4 = track.start_construction(
+        track.Instructions.X_DIAGONAL, (207.5, 0.1, -83.5))
+    d5 = track.start_construction(
+        track.Instructions.X_DIAGONAL, (209.5, 0.1, -85.5))
+    d6 = track.start_construction(
+        track.Instructions.X_DIAGONAL, (211.5, 0.1, -87.5))
+    d7 = track.start_construction(
+        track.Instructions.X_DIAGONAL, (213.5, 0.1, -89.5))
+    d8 = track.start_construction(
+        track.Instructions.X_DIAGONAL, (215.5, 0.1, -91.5))
+    d9 = track.start_construction(
+        track.Instructions.X_DIAGONAL, (217.5, 0.1, -93.5))
+    d10 = track.start_construction(
+        track.Instructions.X_DIAGONAL, (219.5, 0.1, -95.5))
+
+    curve10 = track.start_construction(
+        track.Instructions.X_S_STRAIGHT, (228, 0.1, -105))
+
+    d11 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (226, 0.1, -121))
+    d12 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (224, 0.1, -123))
+    d13 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (222, 0.1, -125))
+    d14 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (220, 0.1, -127))
+    d15 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (218, 0.1, -129))
+    d16 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (216, 0.1, -131))
+    d17 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (214, 0.1, -133))
+    d18 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (212, 0.1, -135))
+    d19 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (210, 0.1, -137))
+    d20 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (208, 0.1, -139))
+
+    straight10 = track.start_construction(
+        track.Instructions.Z_L_STRAIGHT, (188.5, 0.1, -147.5))
+    straight11 = track.start_construction(
+        track.Instructions.Z_L_STRAIGHT, (138.5, 0.1, -147.5))
+    straight12 = track.start_construction(
+        track.Instructions.Z_L_STRAIGHT, (88.5, 0.1, -147.5))
+
+    d21 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (2, 0.1, -126))
+    d22 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (4, 0.1, -128))
+    d23 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (6, 0.1, -130))
+    d24 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (8, 0.1, -132))
+    d25 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (10, 0.1, -134))
+    d26 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (12, 0.1, -136))
+    d27 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (14, 0.1, -138))
+    d28 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (16, 0.1, -140))
+    d29 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (18, 0.1, -142))
+    d30 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (20, 0.1, -144))
+    d31 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (22, 0.1, -146))
+    d32 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (24, 0.1, -148))
+    d33 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (26, 0.1, -150))
+    d34 = track.start_construction(
+        track.Instructions.Z_DIAGONAL, (28, 0.1, -152))
+
+    straight14 = track.start_construction(
+        track.Instructions.X_L_STRAIGHT, (0, 0.1, -50))
+    straight15 = track.start_construction(
+        track.Instructions.X_L_STRAIGHT, (0, 0.1, -100))
+
+    # straight13 = track.start_construction(
+    #     track.Instructions.Z_S_STRAIGHT, (48.5, 0.1, -147.5))
+    track.product.set_position((43.5, 0.1, -147.5))
+    track.product.set_scale((40, 0, 15)),
+    straight13 = track.create()
+
+    # track.product = Wall((Wall.WallType.BARRIER))
+    # track.product.set_position((-3, 1, 15))
+    # track.product.set_scale((.1, 1, 50)),
+    # barrier = track.create()
