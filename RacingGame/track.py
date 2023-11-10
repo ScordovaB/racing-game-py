@@ -166,6 +166,36 @@ class Construction:
         self.product.set_scale((2, 0, 15))
         return self.create()
 
+    def z_pirelli_sign(self, position: tuple) -> Entity:
+        self.product.set_position(position)
+        self.product.set_scale((5, 2, 0.1))
+        return self.create()
+
+    def x_pirelli_sign(self, position: tuple) -> Entity:
+        self.product.set_position(position)
+        self.product.set_scale((0.1, 2, 5))
+        return self.create()
+
+    def z_rolex_sign(self, position: tuple) -> Entity:
+        self.product.set_position(position)
+        self.product.set_scale((5, 10, 30))
+        return self.create()
+
+    def x_rolex_sign(self, position: tuple) -> Entity:
+        self.product.set_position(position)
+        self.product.set_scale((30, 10, 5))
+        return self.create()
+
+    def x_barrier(self, position: tuple) -> Entity:
+        self.product.set_position(position)
+        self.product.set_scale((50, 3, 0.1))
+        return self.create()
+
+    def z_barrier(self, position: tuple) -> Entity:
+        self.product.set_position(position)
+        self.product.set_scale((0.1, 3, 50))
+        return self.create()
+
     class Instructions(Enum):
         MAP = 'self.map()'
         X_L_STRAIGHT = 'self.x_long_straight({})'
@@ -174,6 +204,12 @@ class Construction:
         Z_S_STRAIGHT = 'self.z_short_straight({})'
         Z_DIAGONAL = 'self.z_diagonal({})'
         X_DIAGONAL = 'self.x_diagonal({})'
+        Z_PIRELLI_SIGN = 'self.z_pirelli_sign({})'
+        X_PIRELLI_SIGN = 'self.x_pirelli_sign({})'
+        Z_ROLEX_SIGN = 'self.z_rolex_sign({})'
+        X_ROLEX_SIGN = 'self.x_rolex_sign({})'
+        X_BARRIER = 'self.x_barrier({})'
+        Z_BARRIER = 'self.z_barrier({})'
 
     def start_construction(self, type: Instructions, position: tuple):
         if (position != None):
@@ -183,7 +219,11 @@ class Construction:
 
 def track():
     track = Construction()
+
+    # Map
     track.product = Ground(Ground.GroundType.GRASS)
+
+    # Road
     ground = track.start_construction(track.Instructions.MAP, None)
     track.product = Ground(Ground.GroundType.ASPHALT)
 
@@ -367,13 +407,59 @@ def track():
     straight15 = track.start_construction(
         track.Instructions.X_L_STRAIGHT, (0, 0.1, -100))
 
-    # straight13 = track.start_construction(
-    #     track.Instructions.Z_S_STRAIGHT, (48.5, 0.1, -147.5))
     track.product.set_position((43.5, 0.1, -147.5))
     track.product.set_scale((40, 0, 15)),
     straight13 = track.create()
 
-    # track.product = Wall((Wall.WallType.BARRIER))
-    # track.product.set_position((-3, 1, 15))
-    # track.product.set_scale((.1, 1, 50)),
-    # barrier = track.create()
+    # Barriers
+    track.product = Wall(Wall.WallType.BARRIER)
+    barrier1 = track.start_construction(
+        track.Instructions.Z_BARRIER, (-15, 0.1, -4))
+    barrier2 = track.start_construction(
+        track.Instructions.Z_BARRIER, (-15, 0.1, 46))
+    barrier3 = track.start_construction(
+        track.Instructions.Z_BARRIER, (-15, 0.1, 96))
+    barrier4 = track.start_construction(
+        track.Instructions.Z_BARRIER, (-15, 0.1, 146))
+
+    barrier1_2 = track.start_construction(
+        track.Instructions.Z_BARRIER, (15, 0.1, -5))
+    barrier2_2 = track.start_construction(
+        track.Instructions.Z_BARRIER, (15, 0.1, 45))
+    barrier3_2 = track.start_construction(
+        track.Instructions.Z_BARRIER, (15, 0.1, 95))
+
+    barrier5 = track.start_construction(
+        track.Instructions.X_BARRIER, (10, 0.1, 171.5))
+    barrier6 = track.start_construction(
+        track.Instructions.X_BARRIER, (60, 0.1, 171.5))
+    barrier7 = track.start_construction(
+        track.Instructions.X_BARRIER, (110, 0.1, 171.5))
+    barrier8 = track.start_construction(
+        track.Instructions.X_BARRIER, (160, 0.1, 171.5))
+
+    barrier4_2 = track.start_construction(
+        track.Instructions.X_BARRIER, (40, 0.1, 120))
+    barrier5_2 = track.start_construction(
+        track.Instructions.X_BARRIER, (90, 0.1, 120))
+    track.product.set_position((115, 0.1, 132.5))
+    track.product.set_scale((0.1, 3, 25))
+    track.create()
+    barrier5_2 = track.start_construction(
+        track.Instructions.X_BARRIER, (140, 0.1, 145))
+
+    # barrier6_2 = track.start_construction(
+    #     track.Instructions.X_BARRIER, (110, 0.1, 171.5))
+    # barrier7_2 = track.start_construction(
+    #     track.Instructions.X_BARRIER, (160, 0.1, 171.5))
+
+    track.product = Wall(Wall.WallType.ROLEX)
+    pirelli1 = track.start_construction(
+        track.Instructions.X_ROLEX_SIGN, (0, 15, 0))
+
+    track.product = Wall(Wall.WallType.PIRELLI)
+    pirelli1 = track.start_construction(
+        track.Instructions.Z_PIRELLI_SIGN, (0, 1.1, 171.4))
+    track.product = Wall(Wall.WallType.PIRELLI)
+    pirelli1 = track.start_construction(
+        track.Instructions.Z_PIRELLI_SIGN, (5, 1.1, 171.4))
