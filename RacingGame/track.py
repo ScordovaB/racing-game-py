@@ -129,8 +129,8 @@ class Construction:
         self._product = product
 
     def map(self) -> Entity:
-        self.product.set_scale((400, 0, 400))
-        self.product.set_position((185, 0, 0))
+        self.product.set_scale((380, 0, 400))
+        self.product.set_position((165, 0, 30))
         return self.create()
 
     def create(self) -> Entity:
@@ -445,8 +445,106 @@ def track():
     track.product.set_position((115, 0.1, 132.5))
     track.product.set_scale((0.1, 3, 25))
     track.create()
-    barrier5_2 = track.start_construction(
+    barrier6_2 = track.start_construction(
         track.Instructions.X_BARRIER, (140, 0.1, 145))
+    barrier7_2 = track.start_construction(
+        track.Instructions.X_BARRIER, (190, 0.1, 145))
+    track.product.set_position((185, 0.1, 189))
+    track.product.set_scale((0.1, 3, 35))
+    track.create()
+    barrier9 = track.start_construction(
+        track.Instructions.X_BARRIER, (210, 0.1, 206.5))
+    barrier10 = track.start_construction(
+        track.Instructions.X_BARRIER, (260, 0.1, 206.5))
+
+    barrier11 = track.start_construction(
+        track.Instructions.Z_BARRIER, (259, 0.1, 181.5))
+    barrier12 = track.start_construction(
+        track.Instructions.Z_BARRIER, (259, 0.1, 131.5))
+    barrier13 = track.start_construction(
+        track.Instructions.Z_BARRIER, (259, 0.1, 81.5))
+    barrier14 = track.start_construction(
+        track.Instructions.Z_BARRIER, (259, 0.1, 31.5))
+    barrier15 = track.start_construction(
+        track.Instructions.Z_BARRIER, (259, 0.1, -18.5))
+    barrier16 = track.start_construction(
+        track.Instructions.Z_BARRIER, (259, 0.1, -68.5))
+    barrier17 = track.start_construction(
+        track.Instructions.X_BARRIER, (265, 0.1, 66))
+
+    barrier8_2 = track.start_construction(
+        track.Instructions.Z_BARRIER, (222.5, 0.1, 156))
+    barrier9_2 = track.start_construction(
+        track.Instructions.Z_BARRIER, (210, 0.1, 66))
+    barrier10_2 = track.start_construction(
+        track.Instructions.Z_BARRIER, (210, 0.1, 48))
+    barrier11_2 = track.start_construction(
+        track.Instructions.X_BARRIER, (205, 0.1, 23))
+    barrier12_2 = track.start_construction(
+        track.Instructions.Z_BARRIER, (230, 0.1, -2))
+    barrier13_2 = track.start_construction(
+        track.Instructions.Z_BARRIER, (230, 0.1, -22))
+
+    barrier17 = track.start_construction(
+        track.Instructions.X_BARRIER, (240, 0.1, -74.5))
+    barrier18 = track.start_construction(
+        track.Instructions.Z_BARRIER, (240, 0.1, -99.5))
+    barrier19 = track.start_construction(
+        track.Instructions.Z_BARRIER, (240, 0.1, -149.5))
+
+    barrier14_2 = track.start_construction(
+        track.Instructions.X_BARRIER, (205, 0.1, -47))
+    barrier15_2 = track.start_construction(
+        track.Instructions.Z_BARRIER, (180, 0.1, -72))
+    barrier16_2 = track.start_construction(
+        track.Instructions.Z_BARRIER, (180, 0.1, -112))
+    barrier17_2 = track.start_construction(
+        track.Instructions.X_BARRIER, (190, 0.1, -109))
+
+    barrier20 = track.start_construction(
+        track.Instructions.X_BARRIER, (215, 0.1, -160.5))
+    barrier21 = track.start_construction(
+        track.Instructions.X_BARRIER, (165, 0.1, -160.5))
+    barrier22 = track.start_construction(
+        track.Instructions.X_BARRIER, (115, 0.1, -160.5))
+    barrier23 = track.start_construction(
+        track.Instructions.X_BARRIER, (65, 0.1, -160.5))
+    barrier24 = track.start_construction(
+        track.Instructions.X_BARRIER, (15, 0.1, -160.5))
+    barrier24 = track.start_construction(
+        track.Instructions.X_BARRIER, (-35, 0.1, -160.5))
+
+    barrier18_2 = track.start_construction(
+        track.Instructions.X_BARRIER, (155, 0.1, -137))
+    barrier19_2 = track.start_construction(
+        track.Instructions.X_BARRIER, (105, 0.1, -137))
+    barrier20_2 = track.start_construction(
+        track.Instructions.X_BARRIER, (55, 0.1, -137))
+    barrier21_2 = track.start_construction(
+        track.Instructions.X_BARRIER, (55, 0.1, -137))
+
+    track.product.set_position((30, 0.1, -126.5))
+    track.product.set_scale((0.1, 3, 21))
+    track.create()
+    track.product.set_position((19.5, 0.1, -116))
+    track.product.set_scale((21, 3, 0.1))
+    track.create()
+
+    barrier22_2 = track.start_construction(
+        track.Instructions.Z_BARRIER, (15, 0.1, -91))
+    barrier23_2 = track.start_construction(
+        track.Instructions.Z_BARRIER, (15, 0.1, -41))
+    barrier24_2 = track.start_construction(
+        track.Instructions.Z_BARRIER, (15, 0.1, 9))
+
+    barrier25 = track.start_construction(
+        track.Instructions.Z_BARRIER, (-15, 0.1, -135.5))
+    barrier27 = track.start_construction(
+        track.Instructions.Z_BARRIER, (-15, 0.1, -85.5))
+    barrier28 = track.start_construction(
+        track.Instructions.Z_BARRIER, (-15, 0.1, -35.5))
+    barrier29 = track.start_construction(
+        track.Instructions.Z_BARRIER, (-15, 0.1, -10.5))
 
     # barrier6_2 = track.start_construction(
     #     track.Instructions.X_BARRIER, (110, 0.1, 171.5))
@@ -460,6 +558,7 @@ def track():
     track.product = Wall(Wall.WallType.PIRELLI)
     pirelli1 = track.start_construction(
         track.Instructions.Z_PIRELLI_SIGN, (0, 1.1, 171.4))
-    track.product = Wall(Wall.WallType.PIRELLI)
-    pirelli1 = track.start_construction(
+    pirelli2 = track.start_construction(
         track.Instructions.Z_PIRELLI_SIGN, (5, 1.1, 171.4))
+    pirelli3 = track.start_construction(
+        track.Instructions.Z_PIRELLI_SIGN, (217.5, 1.1, 145))
