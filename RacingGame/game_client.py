@@ -5,4 +5,8 @@ if __name__ == '__main__':
     
     juego = Game()
     track()
+
+    def update():
+        juego.update()
+        
     juego.runGame()

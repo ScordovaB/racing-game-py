@@ -73,7 +73,7 @@ def update_highscore(score: float, highscore: HighScore, caretaker: HighScoreCar
     caretaker.load_lap_time(highscore, filename)
     # Update highscore with new one
     new_high = score
-    if new_high > highscore.score:
+    if new_high < highscore.score and new_high > 0:
         highscore.score = new_high
         caretaker.save_lap_time(highscore, filename)
         print(f"New high score: {highscore.score}")
@@ -283,6 +283,7 @@ def input(key):
         #Show mouse in screen for quitMenu interaction
         mouse.locked = not mouse.locked
         quitMenu = QuitMenu("Exit Game")
+        resumeMenu = quitMenu.resumeGame()
 
 
 start_time = time.time()

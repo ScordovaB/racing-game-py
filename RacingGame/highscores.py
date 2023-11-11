@@ -44,7 +44,7 @@ if __name__ == "__main__":
 
     #Se actualiza el score
     new_high = 160
-    if new_high > high.score:
+    if new_high < high.score:
         high.score = new_high
         caretaker.save_lap_time(high, './RacingGame/highscores.json')
         print(f"New high score: {high.score}")
