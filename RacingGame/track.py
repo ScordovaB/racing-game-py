@@ -31,7 +31,7 @@ class Structure(ABC):
 
 class Asphalt(Structure):
     def __init__(self):
-        super().__init__('asphalt.jpg', 'plane', 'mesh')
+        super().__init__('asfaltoPro.jpg', 'plane', 'mesh')
 
 
 class FinishLine(Structure):
