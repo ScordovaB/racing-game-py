@@ -33,6 +33,7 @@ class TkinterMenuFacade:
         self.framework.set_game_function(game_function)
 
     def run_menu(self)->None:
+        '''Run the menu with the framework '''
         self.framework.run()
 
 

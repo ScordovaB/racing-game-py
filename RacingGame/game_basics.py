@@ -18,8 +18,8 @@ class FinishLapLine(Entity):
 
 class InGameText(Text):
     '''Class that creates the in game texts'''
-    def __init__(self, text:str, position:tuple):
-        self.gameText = Text(text=text, position=position, scale=2, color=color.white)
+    def __init__(self, text:str, position:tuple, color=color.white):
+        self.gameText = Text(text=text, position=position, scale=2, color=color)
 
 class GameInputs(Entity):
 
@@ -119,6 +119,8 @@ class Game():
         self.rpm_text = InGameText('0',position=(0.66,-0.3))
         self.gear_text = InGameText('0',position=(0.72, -0.42))
         self.timer = InGameText('0',position=(-0.55, 0.4))
+        self.highscore_text = InGameText('Highscore: ',position=(-0.8, 0.34), color = color.gold)
+        self.highscore_value = InGameText('0',position=(-0.54, 0.34), color = color.gold)
 
         #Username
         self.username = InGameText('Username: ',position=(-0.8, 0.46))
@@ -126,6 +128,8 @@ class Game():
 
         self.time_text = InGameText('Lap Time: ',position=(-0.8, 0.4))
 
+        #Get for first time highscore from json
+        self.caretaker.load_lap_time(self.highscore, self.highscore_file)
 
         #Game realtime updates, with function update and input
         self.inputs = GameInputs()
@@ -219,6 +223,7 @@ class Game():
         self.timer.gameText.text = str(round(self.realtime, 2))
         self.rpm_text.gameText.text = str(int(self.rpm))
         self.gear_text.gameText.text = str(int(self.gear))
+        self.highscore_value.gameText.text = str(round(self.highscore.score, 2))
 
         #Real time for time laps
         self.realtime += time.dt
