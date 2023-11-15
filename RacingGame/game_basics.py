@@ -4,7 +4,7 @@ from ursina import *
 from ursina.prefabs.first_person_controller import FirstPersonController
 import time
 from highscores import HighScore, HighScoreCaretaker, HighScoreMemento
-from menus import QuitMenu
+from ingame_menus import QuitMenu
 
 #Paths for the assets
 PATH_IMAGES = 'assets/images/'
@@ -296,6 +296,8 @@ class Game():
         
     def runGame(self, name:str)->None:
         '''Run game method '''
+        window.size = window.fullscreen_size
+        window.position = Vec2(0, 0)
         self.username_text.gameText.text = name
         self.app.run()
         
