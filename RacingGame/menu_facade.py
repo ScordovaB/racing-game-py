@@ -11,7 +11,7 @@ class TkinterMenuFacade:
 
     def setup_menu(self)->None:
         '''Set up the menu with the framework'''
-        self.framework.set_geometry("1650x928")
+        self.framework.set_geometry("1366x768")
         self.framework.set_images("./RacingGame/assets/images/gtm.png","./RacingGame/assets/images/car_ico.ico")
         self.framework.create_frame(8)
         self.framework.create_label("Run GT Mexico", ("Unispace", 30))
