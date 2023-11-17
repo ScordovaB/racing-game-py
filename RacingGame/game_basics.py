@@ -149,7 +149,7 @@ class Game():
 
     def update_player_rotation(self):
         '''Method that updates the car rotation'''
-        self.player.rotate((0, (held_keys['e'] - held_keys['q'])*2, 0))
+        self.player.rotate((0, (held_keys['e'] - held_keys['q'])*2.2, 0))
 
     def upadate_player_speed(self):
         '''Method that updates the speed of the car'''
@@ -285,7 +285,7 @@ class Game():
                 if self.velocity == 0:
                     self.play_audio([self.neutral_audio])
             if held_keys['space']:
-                self.velocity -= 0.2
+                self.velocity -= 0.4
                 self.upadate_player_speed()
 
 
