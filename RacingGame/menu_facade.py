@@ -41,9 +41,3 @@ if __name__ == '__main__':
     menu = TkinterMenuFacade()
     menu.setup_menu()
     menu.run_menu()
-
-    username = menu.get_username()
-    if username:
-        print("Username:", username)
-    else:
-        print("Username not available.")

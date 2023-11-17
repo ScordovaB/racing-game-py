@@ -138,7 +138,7 @@ class Game():
         '''Method that verifies the speed of the car and helps with its inertia'''
         #global velocity
         if self.velocity > 0:
-            self.velocity -= .2
+            self.velocity -= .15
             held_keys['p'] = True
         if self.velocity < 0:
             self.velocity = 0
