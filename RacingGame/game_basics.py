@@ -37,12 +37,12 @@ class GameSky():
     '''Class that creates the sky in the game'''
 
     def __init__(self):
-        self.sky = Sky()
-        self.sky.texture = 'sky_sunset'
+        self._sky = Sky()
+        self._sky.texture = 'sky_sunset'
 
     def change_sky_default(self):
         '''Method that changes the sky to the default one'''
-        self.sky.texture = 'sky_default'
+        self._sky.texture = 'sky_default'
 
 class GameCar(Entity):
     '''Class that creates the car in the game'''
