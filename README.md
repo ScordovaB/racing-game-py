@@ -1,5 +1,6 @@
 # racing-game-py
-# 3D Racing Game created with Ursina 
+# 3D Racing Game created with Ursina
+
 ## Game buttons: press "W" to speed up, press "Q" to turn left, press "E" to turn right, press "S" to go in reverse and press "space" to brake
 ## 
 # To RUN the GAME:
