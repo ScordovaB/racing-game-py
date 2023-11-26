@@ -78,7 +78,7 @@ class Barrier(Structure):
 
 class Entities(ABC):
     ''' Builder interface declares methods every entity builders have in common '''
-    @property
+    
     def structure(self):
         ''' Defines the product structure in which the entity is based '''
         return self._structure
