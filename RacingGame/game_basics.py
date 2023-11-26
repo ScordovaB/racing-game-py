@@ -59,13 +59,40 @@ class GameCar(Entity):
         '''Method that updates the texture of the car'''
         self.car.texture = texture
 
+class AudioManager:
+    '''Class that creates the audio manager in the game'''
+    def __init__(self):
+        self.neutral_audio = self.instance_audios(f'{PATH_AUDIO}ferrari-488-pista-neutral.mp3')
+        self.acce_audio = self.instance_audios(f'{PATH_AUDIO}ferrari-488-pista-acceleration.mp3')
+        self.acc_from_0_audio = self.instance_audios(f'{PATH_AUDIO}ferrari-488-pista-primera.mp3')
+        self.dec_to_0 = self.instance_audios(f'{PATH_AUDIO}ferrari-488-pista-dec_primera.mp3')
+        self.dec_audio = self.instance_audios(f'{PATH_AUDIO}ferrari-488-pista-decelerate.mp3')
+        self.shift_audio = self.instance_audios(f'{PATH_AUDIO}ferrari-488-pista-shift.mp3')
+
+    def instance_audios(self, audio_path):
+        '''Method that creates the audio instances'''
+        return Audio(audio_path, loop=False, autoplay=False)
+    
+    def stop_all_audio(self):
+        '''Method to stop all audio in the game '''
+        self.neutral_audio.stop()
+        self.acce_audio.stop()
+        self.acc_from_0_audio.stop()
+        self.dec_to_0.stop()
+        self.dec_audio.stop()
+        self.shift_audio.stop()
+
+    def play_audio(self, audios:List[Audio], stop_others=True):
+        '''Method to play specific audios in the game '''
+        if(stop_others):
+            self.stop_all_audio()
+        for audio in audios:
+            audio.play()
+
 
 class Game():
     '''Class that creates the game,
      it has all the game's logic, variables and methods to function properly'''
-
-    def instance_audios(self, audio_path):
-        return Audio(audio_path, loop=False, autoplay=False)
 
     def __init__(self):
 
@@ -100,13 +127,8 @@ class Game():
         self.car  = GameCar()
         
         #Audios
-        #self.acc_audio = self.instance_audios(f'{PATH_AUDIO}ferrari-488-pista-primera.mp3')
-        self.neutral_audio = self.instance_audios(f'{PATH_AUDIO}ferrari-488-pista-neutral.mp3')
-        self.acce_audio = self.instance_audios(f'{PATH_AUDIO}ferrari-488-pista-acceleration.mp3')
-        self.acc_from_0_audio = self.instance_audios(f'{PATH_AUDIO}ferrari-488-pista-primera.mp3')
-        self.dec_to_0 = self.instance_audios(f'{PATH_AUDIO}ferrari-488-pista-dec_primera.mp3')
-        self.dec_audio = self.instance_audios(f'{PATH_AUDIO}ferrari-488-pista-decelerate.mp3')
-        self.shift_audio = self.instance_audios(f'{PATH_AUDIO}ferrari-488-pista-shift.mp3')
+        self.audio = AudioManager()
+
 
         #Highscores for the game
         self.highscore = HighScore()
@@ -135,7 +157,8 @@ class Game():
         self.inputs = GameInputs()
     
     def check_velocity(self):
-        '''Method that verifies the speed of the car and helps with its inertia'''
+        '''Method that verifies the speed of the car and helps with its inertia,
+        if the car is going forward and the player stops pressing the key, the car will keep moving forward'''
         #global velocity
         if self.velocity > 0:
             self.velocity -= .15
@@ -145,28 +168,31 @@ class Game():
             held_keys['p'] = False
     
     def pause_game(self):
+        '''Method that pauses the game'''
         self.player.speed = 0
 
     def update_player_rotation(self):
-        '''Method that updates the car rotation'''
+        '''Method that updates the car rotation, by pressing Q and E keys'''
         self.player.rotate((0, (held_keys['e'] - held_keys['q'])*2.2, 0))
 
     def upadate_player_speed(self):
-        '''Method that updates the speed of the car'''
+        '''Method that updates the speed of the car, depending on the velocity'''
         self.player.speed = self.player_og_speed + self.velocity
 
     def change_rpm_gear(self):
-        '''Method that changes the RPM and Gear of the car, depending on the speed'''
+        '''Method that changes the RPM and Gear of the car, depending on the speed,
+        it also plays the audios for the gear changes,
+        the RPM and Gear are shown in the game's UI'''
         # maximum of 8 gears
         new_gear = min((self.velocity - 1) // 20 + 1, 5) if self.velocity >= 0 else 1
 
         # Check if the gear has changed
         if new_gear != self.gear:
             if new_gear < self.gear and new_gear != 0:
-                self.play_audio([self.shift_audio, self.dec_to_0])
+                self.audio.play_audio([self.audio.shift_audio, self.audio.dec_to_0])
                 
             elif new_gear > self.gear:
-                self.play_audio([self.shift_audio, self.acce_audio])
+                self.audio.play_audio([self.audio.shift_audio, self.audio.acce_audio])
 
             self.rpm = 0
             self.gear = new_gear
@@ -179,7 +205,9 @@ class Game():
             self.rpm = 8000
 
     def update_highscore(self, score: float, highscore: HighScore, caretaker: HighScoreCaretaker, filename: str) -> None:
-        '''Method that calls the High Score Memento and updates the game's highscore'''
+        '''Method that calls the High Score Memento and updates the game's highscore,
+        if the new score is lower than the current highscore, it will be updated,
+        the highscore is saved in a json file'''
         # Load highscore
         caretaker.load_lap_time(highscore, filename)
         # Update highscore with new one
@@ -198,26 +226,11 @@ class Game():
                                  self.caretaker, self.highscore_file)
             self.realtime = 0
     
-    def stop_all_audio(self):
-        '''Method to stop all audio in the game '''
-        self.neutral_audio.stop()
-        self.acce_audio.stop()
-        self.acc_from_0_audio.stop()
-        self.dec_to_0.stop()
-        self.dec_audio.stop()
-        self.shift_audio.stop()
-
-    def play_audio(self, audios:List[Audio], stop_others=True):
-        '''Method to play specific audios in the game '''
-        if(stop_others):
-            self.stop_all_audio()
-        for audio in audios:
-            audio.play()
 
     def update(self):
         '''UPDATE URSINA METHOD, this method makes all the games changes in real time,
         this method is called by the main loop of the game,
-        verything inside its executing itself all the time'''
+        everything inside its executing itself all the time, including the inputs'''
         # print In Game Texts
         self.velocity_text.gameText.text = str(round(self.velocity, 2))
         self.timer.gameText.text = str(round(self.realtime, 2))
@@ -262,7 +275,7 @@ class Game():
             # print(current_keys[0])
             self.car.changeTexture(key_combinations[current_keys[0]])
 
-            if 'w' in current_keys[0] and not self.acc_from_0_audio.playing:
+            if 'w' in current_keys[0] and not self.audio.acc_from_0_audio.playing:
 
                 held_keys['p'] = False
 
@@ -283,7 +296,7 @@ class Game():
                 self.check_velocity()
 
                 if self.velocity == 0:
-                    self.play_audio([self.neutral_audio])
+                    self.audio.play_audio([self.audio.neutral_audio])
             if held_keys['space']:
                 self.velocity -= 0.4
                 self.upadate_player_speed()
@@ -291,12 +304,12 @@ class Game():
 
         else:
             #No valid key combination, no keys being pressed
-            if not self.neutral_audio.playing and self.velocity == 0:
-                self.play_audio([self.neutral_audio])
+            if not self.audio.neutral_audio.playing and self.velocity == 0:
+                self.audio.play_audio([self.audio.neutral_audio])
 
             #Play audios for deceleration
-            elif ((not self.dec_audio.playing) or (not self.dec_to_0.playing)) and self.velocity > 0:
-                self.play_audio([self.dec_to_0])
+            elif ((not self.audio.dec_audio.playing) or (not self.audio.dec_to_0.playing)) and self.velocity > 0:
+                self.audio.play_audio([self.audio.dec_to_0])
 
             self.upadate_player_speed()
             self.check_velocity()
