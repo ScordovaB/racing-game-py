@@ -9,7 +9,7 @@ from enum import Enum
 class Structure(ABC):
     ''' Basic structure class of the entities on the map '''
 
-    def __init__(self, path: str, model=str, collider=str) -> None:
+    def __init__(self, path: str, model=str, collider=str) -> Entity:
         self._position = (0, 0, 0)
         self._model = model
         self._texture = path
@@ -78,16 +78,16 @@ class Barrier(Structure):
 
 class Entities(ABC):
     ''' Builder interface declares methods every entity builders have in common '''
-    
+
     def structure(self):
         ''' Defines the product structure in which the entity is based '''
         return self._structure
 
-    def set_scale(self, scale: tuple) -> None:
+    def set_scale(self, scale: tuple) -> Entity:
         ''' Method to set the entity size '''
         self._structure._scale = scale
 
-    def set_position(self, position: tuple) -> None:
+    def set_position(self, position: tuple) -> Entity:
         ''' Method to set the entity coordinates '''
         self._structure._position = position
 
@@ -99,7 +99,7 @@ class Ground(Entities):
         ASPHALT = Asphalt()
         FINISHLINE = FinishLine()
 
-    def __init__(self, tipo: GroundType) -> None:
+    def __init__(self, tipo: GroundType) -> Structure:
         self._structure = tipo.value
 
 
@@ -111,14 +111,14 @@ class Wall(Entities):
         PIRELLI = PirelliSign()
         ROLEX = RolexSign()
 
-    def __init__(self, tipo: WallType) -> None:
+    def __init__(self, tipo: WallType) -> Structure:
         self._structure = tipo.value
 
 
 class Construction:
     ''' Director class to define set of steps to create specific entities '''
 
-    def __init__(self) -> None:
+    def __init__(self) -> product:
         self._product = None
 
     @property
@@ -126,7 +126,7 @@ class Construction:
         return self._product
 
     @product.setter
-    def product(self, product: Entities) -> None:
+    def product(self, product: Entities) -> Entities:
         self._product = product
 
     def map(self) -> Entity:
